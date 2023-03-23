@@ -1,0 +1,56 @@
+/*
+ * Gradle build configuration for specific lab module / exercise
+ */
+// enabled plugins
+plugins {
+    // Support for Java
+    id 'java'
+    // Support for Java applications
+    id 'application'
+}
+
+// Project/Module information
+description = 'Uebung Multichat – Server'
+group = 'ch.zhaw.pm2'
+version = '2023'
+
+// Dependency configuration
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // dependency to the protocol library
+    implementation project(':protocol')
+    // JUnit Jupiter dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.+'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.+'
+}
+
+// Configuration for Application plugin
+application {
+    // Define the main class for the application.
+    mainClass = 'ch.zhaw.pm2.multichat.server.Server'
+}
+
+// Test task configuration
+test {
+    // Use JUnit platform for unit tests
+    useJUnitPlatform()
+}
+
+// Java plugin configuration
+java {
+    // By default the Java version of the gradle process is used as source/target version.
+    // This can be overridden, to ensure a specific version. Enable only if required.
+    sourceCompatibility = JavaVersion.VERSION_17 // ensure Java source code compatibility
+    // targetCompatibility = JavaVersion.VERSION_17 // version of the created byte-code
+
+    // Java compiler specific options
+    compileJava {
+        // source files should be UTF-8 encoded
+        options.encoding = 'UTF-8'
+        // for more options see https://docs.gradle.org/current/dsl/org.gradle.api.tasks.compile.CompileOptions.html
+    }
+}

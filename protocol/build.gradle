@@ -1,0 +1,37 @@
+/*
+ * Gradle build configuration for specific lab module / exercise
+ */
+// enabled plugins
+plugins {
+    // Support for Java
+    id 'java'
+}
+
+// Project/Module information
+description = 'Uebung Multichat – Shared Protocol Classes'
+group = 'ch.zhaw.pm2'
+version = '2023'
+
+// Dependency configuration
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+// Java plugin configuration
+java {
+    // By default the Java version of the gradle process is used as source/target version.
+    // This can be overridden, to ensure a specific version. Enable only if required.
+    sourceCompatibility = JavaVersion.VERSION_17 // ensure Java source code compatibility
+    // targetCompatibility = JavaVersion.VERSION_17 // version of the created byte-code
+
+    // Java compiler specific options
+    compileJava {
+        // source files should be UTF-8 encoded
+        options.encoding = 'UTF-8'
+        // for more options see https://docs.gradle.org/current/dsl/org.gradle.api.tasks.compile.CompileOptions.html
+    }
+}
