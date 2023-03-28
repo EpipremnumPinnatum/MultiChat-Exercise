@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
 import static ch.zhaw.pm2.multichat.client.ClientConnectionHandler.State.*;
 
 public class ChatWindowController {
-    private final Pattern messagePattern = Pattern.compile( "^(?:@(\\w*))?\\s*(.*)$" );
-    private ClientConnectionHandler connectionHandler;
+    private final Pattern messagePattern = Pattern.compile( "^(?:@(\\w*))?\\s*(.*)$" );//Todo: What does it? needs a comment
+    private ClientConnectionHandler connectionHandler;//Todo: connectionHandler is null
     private ClientMessageList messages;
 
     private final WindowCloseHandler windowCloseHandler = new WindowCloseHandler();
@@ -32,10 +32,10 @@ public class ChatWindowController {
     @FXML private TextField messageField;
     @FXML private TextArea messageArea;
     @FXML private Button connectButton;
-    @FXML private Button sendButton;
+    @FXML private Button sendButton; //Todo: send button does nothing
     @FXML private TextField filterValue;
 
-
+    //Todo:Write javadoc
     @FXML
     public void initialize() {
         serverAddressField.setText(NetworkHandler.DEFAULT_ADDRESS.getCanonicalHostName());
@@ -105,7 +105,7 @@ public class ChatWindowController {
     private void applyFilter( ) {
     	this.redrawMessageList();
     }
-
+    //Todo: should be called to create the connection handler
     private void startConnectionHandler() throws IOException {
         String userName = userNameField.getText();
         String serverAddress = serverAddressField.getText();
@@ -118,7 +118,7 @@ public class ChatWindowController {
         // register window close handler
         rootPane.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
     }
-
+    //Todo;javadoc
     private void terminateConnectionHandler() {
         // unregister window close handler
         rootPane.getScene().getWindow().removeEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
@@ -127,7 +127,7 @@ public class ChatWindowController {
             connectionHandler = null;
         }
     }
-
+    //Todo;javadoc
     public void stateChanged(State newState) {
         // update UI (need to be run in UI thread: see Platform.runLater())
         Platform.runLater(new Runnable() {
@@ -140,7 +140,7 @@ public class ChatWindowController {
             terminateConnectionHandler();
         }
     }
-
+    //Todo;javadoc
     public void setUserName(String userName) {
         Platform.runLater(new Runnable() {
             @Override
@@ -149,7 +149,7 @@ public class ChatWindowController {
             }
         });
     }
-
+    //Todo;javadoc
     public void setServerAddress(String serverAddress) {
         Platform.runLater(new Runnable() {
             @Override
@@ -158,7 +158,7 @@ public class ChatWindowController {
             }
         });
     }
-
+    //Todo;javadoc
     public void setServerPort(int serverPort) {
         Platform.runLater(new Runnable() {
             @Override
@@ -167,22 +167,22 @@ public class ChatWindowController {
             }
         });
     }
-
+    //Todo;javadoc
     public void addMessage(String sender, String receiver, String message) {
         messages.addMessage(ClientMessageList.MessageType.MESSAGE, sender, receiver, message);
         this.redrawMessageList();
     }
-
+//Todo;javadoc
     public void addInfo(String message) {
         messages.addMessage(ClientMessageList.MessageType.INFO, null, null, message);
         this.redrawMessageList();
     }
-
+    //Todo;javadoc
     public void addError(String message) {
         messages.addMessage(ClientMessageList.MessageType.ERROR, null, null, message);
         this.redrawMessageList();
     }
-
+    //Todo;javadoc
     public void clearMessageArea() {
         this.messageArea.clear();
     }

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+//Todo: order methods from public to private
 public class Server {
 
     /** Network server for incoming connections. */

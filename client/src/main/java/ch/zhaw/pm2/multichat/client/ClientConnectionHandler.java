@@ -10,6 +10,12 @@ import java.util.Scanner;
 
 import static ch.zhaw.pm2.multichat.client.ClientConnectionHandler.State.*;
 
+//Todo: write javadoc
+
+/**
+ * This class handles the communication with the server
+ */
+
 public class ClientConnectionHandler implements Runnable {
 
     /** The network connection to be used for receiving and sending requests */
