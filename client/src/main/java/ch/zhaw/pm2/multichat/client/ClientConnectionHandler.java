@@ -11,11 +11,13 @@ import java.util.Scanner;
 import static ch.zhaw.pm2.multichat.client.ClientConnectionHandler.State.*;
 
 public class ClientConnectionHandler implements Runnable {
-
+    //TODO: (Strukturell) Code Duplikation in ServerConnectionHandler und ClientConnectionHandler, Superklasse ConnectionHandler schreiben
     /** The network connection to be used for receiving and sending requests */
     private final NetworkHandler.NetworkConnection<String> connection;
 
     private final ChatWindowController controller;
+
+    //TODO: (Strukturell) DATA_TYPE als ENUM definieren
 
     // Data types used for the Chat Protocol
     private static final String DATA_TYPE_CONNECT = "CONNECT";
@@ -37,10 +39,12 @@ public class ClientConnectionHandler implements Runnable {
         NEW, CONFIRM_CONNECT, CONNECTED, CONFIRM_DISCONNECT, DISCONNECTED;
     }
 
+    //TODO: (Strukturell) Observer Pattern verwenden statt Controller als Parameter
     public ClientConnectionHandler(NetworkHandler.NetworkConnection<String> connection,
                                    String userName,
                                    ChatWindowController controller)  {
         this.connection = connection;
+        //TODO: (Funktional) Wenn kein Username angegeben, dann Anonymous-<Nr> verwenden
         this.userName = (userName == null || userName.isBlank())? USER_NONE : userName;
         this.controller = controller;
     }
@@ -77,6 +81,7 @@ public class ClientConnectionHandler implements Runnable {
     private void startReceiving() {
         try {
             System.out.println("Start receiving data...");
+            //TODO: (Funktional) Separater Thread für das Warten auf neue Nachrichten, rest der Applikation blockiert
             while (connection.isAvailable()) {
                 String data = connection.receive();
                 processData(data);
