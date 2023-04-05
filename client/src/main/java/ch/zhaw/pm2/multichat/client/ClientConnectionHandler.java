@@ -115,6 +115,7 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    //Todo: in kleinere Methoden unterteilen, extrem lang
     private void processData(String data) {
         try {
             // parse data content

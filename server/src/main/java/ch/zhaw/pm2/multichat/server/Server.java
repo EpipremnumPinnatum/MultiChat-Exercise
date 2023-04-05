@@ -65,7 +65,7 @@ public class Server {
         	System.err.println("Failed to close server connection: " + e.getMessage());
         }
     }
-
+//Todo: Main Klasse hier ganz unten? Muss nach oben
     /**
      * Main method for starting the server.
      * It will open a network server on the given port and wait for incoming connections.

@@ -20,7 +20,7 @@ import static ch.zhaw.pm2.multichat.client.ClientConnectionHandler.State.*;
 
 public class ChatWindowController {
     private final Pattern messagePattern = Pattern.compile( "^(?:@(\\w*))?\\s*(.*)$" );//Todo: What does it? needs a comment
-    private ClientConnectionHandler connectionHandler;//Todo: connectionHandler is null
+    private ClientConnectionHandler connectionHandler;//Todo: (Funktionaler Fehler)  connectionHandler is null
     private ClientMessageList messages;
 
     private final WindowCloseHandler windowCloseHandler = new WindowCloseHandler();
@@ -32,10 +32,11 @@ public class ChatWindowController {
     @FXML private TextField messageField;
     @FXML private TextArea messageArea;
     @FXML private Button connectButton;
-    @FXML private Button sendButton; //Todo: send button does nothing
+    @FXML private Button sendButton; //Todo: (Funktionaler Fehler) send button does nothing
     @FXML private TextField filterValue;
 
     //Todo:Write javadoc
+    //Todo: public Methoden zuerst, erst dann private
     @FXML
     public void initialize() {
         serverAddressField.setText(NetworkHandler.DEFAULT_ADDRESS.getCanonicalHostName());
@@ -105,7 +106,7 @@ public class ChatWindowController {
     private void applyFilter( ) {
     	this.redrawMessageList();
     }
-    //Todo: should be called to create the connection handler
+    //Todo: (funktionaler Fehler) should be called to create the connection handler
     private void startConnectionHandler() throws IOException {
         String userName = userNameField.getText();
         String serverAddress = serverAddressField.getText();

@@ -103,7 +103,7 @@ public class ServerConnectionHandler {
         }
         System.out.println("Closed Connection Handler for " + userName);
     }
-
+//Todo: extrem lange Methode, in verschiedene Methoden unterteilen
     private void processData(String data) {
         try {
             // parse data content
