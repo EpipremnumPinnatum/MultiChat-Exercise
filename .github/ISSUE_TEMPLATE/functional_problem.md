@@ -1,6 +1,6 @@
 ---
 name: Funktionaler Fehler
-about: Create a report to help us improve
+about: Create a report to describe a "Funktionaler Fehler"
 title: ''
 labels: ''
 assignees: ''
