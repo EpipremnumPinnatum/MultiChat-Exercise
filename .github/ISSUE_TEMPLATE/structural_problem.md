@@ -1,6 +1,6 @@
 ---
 name: Structural Problem
-about: Describe a thestructural problem
+about: Describe a the structural problem
 title: ''
 labels: ''
 assignees: ''
