@@ -5,12 +5,16 @@ import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 //Todo: order methods from public to private
 public class Server {
 
     /** Network server for incoming connections. */
     private NetworkHandler.NetworkServer<String> networkServer;
+
+    private static ExecutorService executorService;
 
     /** Registry for open connections. */
     private Map<String,ServerConnectionHandler> connections = new HashMap<>();
@@ -23,6 +27,7 @@ public class Server {
     public Server(int serverPort) throws IOException {
         // Open server connection
         System.out.println("Create server connection");
+        executorService = Executors.newCachedThreadPool();
         networkServer = NetworkHandler.createServer(serverPort);
         System.out.printf("Listening on %s:%d%n", networkServer.getHostAddress(), networkServer.getHostPort());
     }
@@ -40,14 +45,14 @@ public class Server {
             try {
                 NetworkHandler.NetworkConnection<String> connection = networkServer.waitForConnection();
                 ServerConnectionHandler connectionHandler = new ServerConnectionHandler(connection, connections);
-                connectionHandler.startReceiving();
+                executorService.execute(connectionHandler);
                 System.out.printf("Connected new Client %s with IP:Port <%s:%d>%n",
                     connectionHandler.getUserName(),
                     connection.getRemoteHost(),
                     connection.getRemotePort()
                 );
             } catch (IOException e) {
-            	System.out.println("Warning: Connect failed " + e.getMessage());
+                System.out.println("Warning: Connect failed " + e.getMessage());
             }
         }
         // close server
@@ -63,7 +68,7 @@ public class Server {
             System.out.println("Close server connection.");
             networkServer.close();
         } catch (IOException e) {
-        	System.err.println("Failed to close server connection: " + e.getMessage());
+            System.err.println("Failed to close server connection: " + e.getMessage());
         }
     }
 //Todo: Main Klasse hier ganz unten? Muss nach oben
@@ -96,6 +101,7 @@ public class Server {
             if (server != null) {
                 System.out.println("Shutting initiated...");
                 server.terminate();
+                executorService.shutdown();
             }
             System.out.println("Shutdown complete.");
         }
