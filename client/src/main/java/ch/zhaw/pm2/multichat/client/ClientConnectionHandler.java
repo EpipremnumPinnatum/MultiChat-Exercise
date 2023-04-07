@@ -35,6 +35,13 @@ public class ClientConnectionHandler implements Runnable {
         DataType(String chatProtocolText) {
             this.chatProtocolText = chatProtocolText;
         }
+        /*
+         *returns a String representation of the DataType enumerator.
+         */
+        @Override
+        public String toString(){
+            return chatProtocolText;
+        }
     }
 
     public static final String USER_NONE = "";
@@ -158,7 +165,7 @@ public class ClientConnectionHandler implements Runnable {
             }
 
             // dispatch operation based on type parameter
-            if (type.equals(DataType.CONNECT.chatProtocolText)) {
+            if (type.equals(DataType.CONNECT.toString())) {
                 System.err.println("Illegal connect request from server");
             } else if (type.equals(DataType.CONFIRM.chatProtocolText)) {
                 if (state == CONFIRM_CONNECT) {
@@ -226,7 +233,7 @@ public class ClientConnectionHandler implements Runnable {
 
     public void connect() throws ChatProtocolException {
         if (state != NEW) throw new ChatProtocolException("Illegal state for connect: " + state);
-        this.sendData(userName, USER_NONE, DataType.CONNECT.chatProtocolText, null);
+        this.sendData(userName, USER_NONE, DataType.CONNECT.toString(), null);
         this.setState(CONFIRM_CONNECT);
     }
 
