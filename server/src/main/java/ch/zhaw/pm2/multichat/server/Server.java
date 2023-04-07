@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+//Todo: order methods from public to private
 public class Server {
 
     /** Network server for incoming connections. */
@@ -66,7 +66,7 @@ public class Server {
         	System.err.println("Failed to close server connection: " + e.getMessage());
         }
     }
-
+//Todo: Main Klasse hier ganz unten? Muss nach oben
     /**
      * Main method for starting the server.
      * It will open a network server on the given port and wait for incoming connections.

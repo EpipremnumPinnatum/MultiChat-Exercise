@@ -10,6 +10,12 @@ import java.util.Scanner;
 
 import static ch.zhaw.pm2.multichat.client.ClientConnectionHandler.State.*;
 
+//Todo: write javadoc
+
+/**
+ * This class handles the communication with the server
+ */
+
 public class ClientConnectionHandler implements Runnable {
     //TODO: (Strukturell) Code Duplikation in ServerConnectionHandler und ClientConnectionHandler, Superklasse ConnectionHandler schreiben
     /**
@@ -136,7 +142,9 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
-    //ToDo: processData zu lange
+
+    //Todo: in kleinere Methoden unterteilen, extrem lang
+
     private void processData(String data) {
         try {
             // parse data content
