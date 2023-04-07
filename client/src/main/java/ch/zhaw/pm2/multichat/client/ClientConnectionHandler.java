@@ -20,9 +20,6 @@ public class ClientConnectionHandler implements Runnable {
 
     private final ChatWindowController controller;
 
-    // Data types used for the Chat Protocol
-
-
     public static final String USER_NONE = "";
     public static final String USER_ALL = "*";
 
@@ -36,7 +33,7 @@ public class ClientConnectionHandler implements Runnable {
      */
     private State state = NEW;
 
-    enum State {
+    enum State{
         NEW, CONFIRM_CONNECT, CONNECTED, CONFIRM_DISCONNECT, DISCONNECTED;
     }
 
