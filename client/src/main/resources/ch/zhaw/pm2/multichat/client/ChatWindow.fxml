@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<!--TODO: Textfeld, Aktionen, Button deaktivieren wenn kein Client verbunden ist -->
 <BorderPane fx:id="rootPane" minWidth="-Infinity" prefHeight="500.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.zhaw.pm2.multichat.client.ChatWindowController">
     <top>
         <VBox BorderPane.alignment="CENTER">
