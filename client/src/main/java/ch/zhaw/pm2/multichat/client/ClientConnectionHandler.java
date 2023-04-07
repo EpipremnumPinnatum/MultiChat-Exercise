@@ -1,6 +1,7 @@
 package ch.zhaw.pm2.multichat.client;
 
 import ch.zhaw.pm2.multichat.protocol.ChatProtocolException;
+import ch.zhaw.pm2.multichat.protocol.Configuration;
 import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
 
 import java.io.EOFException;
@@ -21,28 +22,6 @@ public class ClientConnectionHandler implements Runnable {
 
     // Data types used for the Chat Protocol
 
-
-    private enum DataType {
-
-        CONNECT("CONNECT"),
-        CONFIRM("CONFIRM"),
-        DISCONNECT("DISCONNECT"),
-        MESSAGE("MESSAGE"),
-        ERROR("ERROR");
-
-        private final String chatProtocolText;
-
-        DataType(String chatProtocolText) {
-            this.chatProtocolText = chatProtocolText;
-        }
-        /*
-         *returns a String representation of the DataType enumerator.
-         */
-        @Override
-        public String toString(){
-            return chatProtocolText;
-        }
-    }
 
     public static final String USER_NONE = "";
     public static final String USER_ALL = "*";
@@ -165,9 +144,9 @@ public class ClientConnectionHandler implements Runnable {
             }
 
             // dispatch operation based on type parameter
-            if (type.equals(DataType.CONNECT.toString())) {
+            if (type.equals(Configuration.DataType.CONNECT.toString())) {
                 System.err.println("Illegal connect request from server");
-            } else if (type.equals(DataType.CONFIRM.chatProtocolText)) {
+            } else if (type.equals(Configuration.DataType.CONFIRM.toString())) {
                 if (state == CONFIRM_CONNECT) {
                     this.userName = reciever;
                     controller.setUserName(userName);
@@ -183,7 +162,7 @@ public class ClientConnectionHandler implements Runnable {
                 } else {
                     System.err.println("Got unexpected confirm message: " + payload);
                 }
-            } else if (type.equals(DataType.DISCONNECT.chatProtocolText)) {
+            } else if (type.equals(Configuration.DataType.DISCONNECT.toString())) {
                 if (state == DISCONNECTED) {
                     System.out.println("DISCONNECT: Already in disconnected: " + payload);
                     return;
@@ -191,14 +170,14 @@ public class ClientConnectionHandler implements Runnable {
                 controller.addInfo(payload);
                 System.out.println("DISCONNECT: " + payload);
                 this.setState(DISCONNECTED);
-            } else if (type.equals(DataType.MESSAGE.chatProtocolText)) {
+            } else if (type.equals(Configuration.DataType.MESSAGE.toString())) {
                 if (state != CONNECTED) {
                     System.out.println("MESSAGE: Illegal state " + state + " for message: " + payload);
                     return;
                 }
                 controller.addMessage(sender, reciever, payload);
                 System.out.println("MESSAGE: From " + sender + " to " + reciever + ": " + payload);
-            } else if (type.equals(DataType.ERROR.chatProtocolText)) {
+            } else if (type.equals(Configuration.DataType.ERROR.toString())) {
                 controller.addError(payload);
                 System.out.println("ERROR: " + payload);
             } else {
@@ -206,7 +185,7 @@ public class ClientConnectionHandler implements Runnable {
             }
         } catch (ChatProtocolException error) {
             System.err.println("Error while processing data: " + error.getMessage());
-            sendData(USER_NONE, userName, DataType.ERROR.chatProtocolText, error.getMessage());
+            sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), error.getMessage());
         }
     }
 
@@ -233,20 +212,20 @@ public class ClientConnectionHandler implements Runnable {
 
     public void connect() throws ChatProtocolException {
         if (state != NEW) throw new ChatProtocolException("Illegal state for connect: " + state);
-        this.sendData(userName, USER_NONE, DataType.CONNECT.toString(), null);
+        this.sendData(userName, USER_NONE, Configuration.DataType.CONNECT.toString(), null);
         this.setState(CONFIRM_CONNECT);
     }
 
     public void disconnect() throws ChatProtocolException {
         if (state != NEW && state != CONNECTED)
             throw new ChatProtocolException("Illegal state for disconnect: " + state);
-        this.sendData(userName, USER_NONE, DataType.DISCONNECT.chatProtocolText, null);
+        this.sendData(userName, USER_NONE, Configuration.DataType.DISCONNECT.toString(), null);
         this.setState(CONFIRM_DISCONNECT);
     }
 
     public void message(String receiver, String message) throws ChatProtocolException {
         if (state != CONNECTED) throw new ChatProtocolException("Illegal state for message: " + state);
-        this.sendData(userName, receiver, DataType.MESSAGE.chatProtocolText, message);
+        this.sendData(userName, receiver, Configuration.DataType.MESSAGE.toString(), message);
     }
 
 }
