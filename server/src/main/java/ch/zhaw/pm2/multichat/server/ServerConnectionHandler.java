@@ -14,10 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static ch.zhaw.pm2.multichat.server.ServerConnectionHandler.State.*;
 
-public class ServerConnectionHandler {
-    /**
-     * Global counter to generate connection IDs
-     */
+public class ServerConnectionHandler implements Runnable{
+    /** Global counter to generate connection IDs */
     private static final AtomicInteger connectionCounter = new AtomicInteger(0);
 
     /**
@@ -48,6 +46,11 @@ public class ServerConnectionHandler {
      * The current state of this connection
      */
     private State state = NEW;
+
+    @Override
+    public void run() {
+        startReceiving();
+    }
 
     enum State {
         NEW, CONNECTED, DISCONNECTED;
