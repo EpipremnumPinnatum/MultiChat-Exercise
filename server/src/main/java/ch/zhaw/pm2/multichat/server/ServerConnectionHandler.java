@@ -12,8 +12,6 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static ch.zhaw.pm2.multichat.server.ServerConnectionHandler.State.*;
-
 public class ServerConnectionHandler implements Runnable{
     /** Global counter to generate connection IDs */
     private static final AtomicInteger connectionCounter = new AtomicInteger(0);
