@@ -45,15 +45,11 @@ public class ServerConnectionHandler implements Runnable{
     /**
      * The current state of this connection
      */
-    private State state = NEW;
+    private Configuration.ProtocolState protocolState = Configuration.ProtocolState.NEW;
 
     @Override
     public void run() {
         startReceiving();
-    }
-
-    enum State {
-        NEW, CONNECTED, DISCONNECTED;
     }
 
     public ServerConnectionHandler(NetworkHandler.NetworkConnection<String> connection,
@@ -110,7 +106,8 @@ public class ServerConnectionHandler implements Runnable{
         }
         System.out.println("Closed Connection Handler for " + userName);
     }
-//Todo: extrem lange Methode, in verschiedene Methoden unterteilen
+
+    //Todo: extrem lange Methode, in verschiedene Methoden unterteilen
     private void processData(String data) {
         try {
             // parse data content
@@ -140,28 +137,30 @@ public class ServerConnectionHandler implements Runnable{
 
             // dispatch operation based on type parameter
             if (type.equals(Configuration.DataType.CONNECT.toString())) {
-                if (this.state != NEW) throw new ChatProtocolException("Illegal state for connect request: " + state);
+                if (this.protocolState != Configuration.ProtocolState.NEW)
+                    throw new ChatProtocolException("Illegal state for connect request: " + protocolState);
                 if (sender == null || sender.isBlank()) sender = this.userName;
                 if (connectionRegistry.containsKey(sender))
                     throw new ChatProtocolException("User name already taken: " + sender);
                 this.userName = sender;
                 connectionRegistry.put(userName, this);
                 sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Registration successfull for " + userName);
-                this.state = CONNECTED;
+                this.protocolState = Configuration.ProtocolState.CONNECTED;
             } else if (type.equals(Configuration.DataType.CONFIRM.toString())) {
                 System.out.println("Not expecting to receive a CONFIRM request from client");
             } else if (type.equals(Configuration.DataType.DISCONNECT.toString())) {
-                if (state == DISCONNECTED) {
-                    throw new ChatProtocolException("Illegal state for disconnect request: " + state);
+                if (protocolState == Configuration.ProtocolState.DISCONNECTED) {
+                    throw new ChatProtocolException("Illegal state for disconnect request: " + protocolState);
                 }
-                if (state == CONNECTED) {
+                if (protocolState == Configuration.ProtocolState.CONNECTED) {
                     connectionRegistry.remove(this.userName);
                 }
                 sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Confirm disconnect of " + userName);
-                this.state = DISCONNECTED;
+                this.protocolState = Configuration.ProtocolState.DISCONNECTED;
                 this.stopReceiving();
             } else if (type.equals(Configuration.DataType.MESSAGE.toString())) {
-                if (state != CONNECTED) throw new ChatProtocolException("Illegal state for message request: " + state);
+                if (protocolState != Configuration.ProtocolState.CONNECTED)
+                    throw new ChatProtocolException("Illegal state for message request: " + protocolState);
                 if (USER_ALL.equals(reciever)) {
                     for (ServerConnectionHandler handler : connectionRegistry.values()) {
                         handler.sendData(sender, reciever, type, payload);

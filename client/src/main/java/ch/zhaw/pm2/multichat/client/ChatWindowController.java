@@ -1,6 +1,6 @@
 package ch.zhaw.pm2.multichat.client;
 
-import ch.zhaw.pm2.multichat.client.ClientConnectionHandler.State;
+import ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState;
 import ch.zhaw.pm2.multichat.protocol.ChatProtocolException;
 import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
 import javafx.application.Platform;
@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ch.zhaw.pm2.multichat.client.ClientConnectionHandler.State.*;
+import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
 
 public class ChatWindowController {
-    private final Pattern messagePattern = Pattern.compile( "^(?:@(\\w*))?\\s*(.*)$" );//Todo: What does it? needs a comment
+    private final Pattern messagePattern = Pattern.compile("^(?:@(\\w*))?\\s*(.*)$");//Todo: What does it? needs a comment
     private ClientConnectionHandler connectionHandler;//Todo: (Funktionaler Fehler)  connectionHandler is null
     private ClientMessageList messages;
 
@@ -51,7 +51,7 @@ public class ChatWindowController {
     }
 
     @FXML
-    private void toggleConnection () {
+    private void toggleConnection() {
         if (connectionHandler == null || connectionHandler.getState() != CONNECTED) {
             connect();
         } else {
@@ -118,9 +118,10 @@ public class ChatWindowController {
     }
 
     @FXML
-    private void applyFilter( ) {
-    	this.redrawMessageList();
+    private void applyFilter() {
+        this.redrawMessageList();
     }
+
     //Todo: (funktionaler Fehler) should be called to create the connection handler
     private void startConnectionHandler() throws IOException {
         String userName = userNameField.getText();
@@ -134,6 +135,7 @@ public class ChatWindowController {
         // register window close handler
         rootPane.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
     }
+
     //Todo;javadoc
     private void terminateConnectionHandler() {
         // unregister window close handler
@@ -143,19 +145,21 @@ public class ChatWindowController {
             connectionHandler = null;
         }
     }
+
     //Todo;javadoc
-    public void stateChanged(State newState) {
+    public void stateChanged(ProtocolState newProtocolState) {
         // update UI (need to be run in UI thread: see Platform.runLater())
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                connectButton.setText((newState == CONNECTED || newState == CONFIRM_DISCONNECT) ? "Disconnect" : "Connect");
+                connectButton.setText((newProtocolState == CONNECTED || newProtocolState == CONFIRM_DISCONNECT) ? "Disconnect" : "Connect");
             }
         });
-        if (newState == DISCONNECTED) {
+        if (newProtocolState == DISCONNECTED) {
             terminateConnectionHandler();
         }
     }
+
     //Todo;javadoc
     public void setUserName(String userName) {
         Platform.runLater(new Runnable() {
@@ -165,6 +169,7 @@ public class ChatWindowController {
             }
         });
     }
+
     //Todo;javadoc
     public void setServerAddress(String serverAddress) {
         Platform.runLater(new Runnable() {
@@ -174,6 +179,7 @@ public class ChatWindowController {
             }
         });
     }
+
     //Todo;javadoc
     public void setServerPort(int serverPort) {
         Platform.runLater(new Runnable() {
@@ -183,21 +189,25 @@ public class ChatWindowController {
             }
         });
     }
+
     //Todo;javadoc
     public void addMessage(String sender, String receiver, String message) {
         messages.addMessage(ClientMessageList.MessageType.MESSAGE, sender, receiver, message);
         this.redrawMessageList();
     }
-//Todo;javadoc
+
+    //Todo;javadoc
     public void addInfo(String message) {
         messages.addMessage(ClientMessageList.MessageType.INFO, null, null, message);
         this.redrawMessageList();
     }
+
     //Todo;javadoc
     public void addError(String message) {
         messages.addMessage(ClientMessageList.MessageType.ERROR, null, null, message);
         this.redrawMessageList();
     }
+
     //Todo;javadoc
     public void clearMessageArea() {
         this.messageArea.clear();
