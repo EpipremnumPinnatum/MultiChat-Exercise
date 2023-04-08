@@ -1,6 +1,7 @@
 package ch.zhaw.pm2.multichat.server;
 
 import ch.zhaw.pm2.multichat.protocol.ChatProtocolException;
+import ch.zhaw.pm2.multichat.protocol.Configuration;
 import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
 
 import java.io.EOFException;
@@ -17,21 +18,20 @@ public class ServerConnectionHandler implements Runnable{
     /** Global counter to generate connection IDs */
     private static final AtomicInteger connectionCounter = new AtomicInteger(0);
 
-    /** The ID of this connection */
+    /**
+     * The ID of this connection
+     */
     private final int connectionId = connectionCounter.incrementAndGet();
 
-    /** Reference to the registry managing all connections */
-    private final Map<String,ServerConnectionHandler> connectionRegistry;
+    /**
+     * Reference to the registry managing all connections
+     */
+    private final Map<String, ServerConnectionHandler> connectionRegistry;
 
-    /** The network connection to be used for receiving and sending requests */
+    /**
+     * The network connection to be used for receiving and sending requests
+     */
     private final NetworkHandler.NetworkConnection<String> connection;
-
-    // Data types used for the Chat Protocol
-    private static final String DATA_TYPE_CONNECT = "CONNECT";
-    private static final String DATA_TYPE_CONFIRM = "CONFIRM";
-    private static final String DATA_TYPE_DISCONNECT = "DISCONNECT";
-    private static final String DATA_TYPE_MESSAGE = "MESSAGE";
-    private static final String DATA_TYPE_ERROR = "ERROR";
 
     private static final String USER_NONE = "";
     private static final String USER_ALL = "*";
@@ -40,9 +40,11 @@ public class ServerConnectionHandler implements Runnable{
      * The username associated with this connection
      * Using Anonymous-{@link #connectionId} if not specified by the client
      */
-    private String userName = "Anonymous-"+connectionId;
+    private String userName = "Anonymous-" + connectionId;
 
-    /** The current state of this connection */
+    /**
+     * The current state of this connection
+     */
     private State state = NEW;
 
     @Override
@@ -55,7 +57,7 @@ public class ServerConnectionHandler implements Runnable{
     }
 
     public ServerConnectionHandler(NetworkHandler.NetworkConnection<String> connection,
-                                   Map<String,ServerConnectionHandler> registry) {
+                                   Map<String, ServerConnectionHandler> registry) {
         Objects.requireNonNull(connection, "Connection must not be null");
         Objects.requireNonNull(registry, "Registry must not be null");
         this.connection = connection;
@@ -86,9 +88,9 @@ public class ServerConnectionHandler implements Runnable{
             System.out.println("Connection terminated by remote peer");
             connectionRegistry.remove(userName);
             System.out.println("Unregistered because connection terminated: " + userName + " " + e.getMessage());
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("Communication error: " + e.getMessage());
-        } catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             System.err.println("Received object of unknown type: " + e.getMessage());
         }
         System.out.println("Ended Connection Handler for " + userName);
@@ -137,28 +139,28 @@ public class ServerConnectionHandler implements Runnable{
             }
 
             // dispatch operation based on type parameter
-            if (type.equals(DATA_TYPE_CONNECT)) {
+            if (type.equals(Configuration.DataType.CONNECT.toString())) {
                 if (this.state != NEW) throw new ChatProtocolException("Illegal state for connect request: " + state);
                 if (sender == null || sender.isBlank()) sender = this.userName;
                 if (connectionRegistry.containsKey(sender))
                     throw new ChatProtocolException("User name already taken: " + sender);
                 this.userName = sender;
                 connectionRegistry.put(userName, this);
-                sendData(USER_NONE, userName, DATA_TYPE_CONFIRM, "Registration successfull for " + userName);
+                sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Registration successfull for " + userName);
                 this.state = CONNECTED;
-            } else if (type.equals(DATA_TYPE_CONFIRM)) {
+            } else if (type.equals(Configuration.DataType.CONFIRM.toString())) {
                 System.out.println("Not expecting to receive a CONFIRM request from client");
-            } else if (type.equals(DATA_TYPE_DISCONNECT)) {
+            } else if (type.equals(Configuration.DataType.DISCONNECT.toString())) {
                 if (state == DISCONNECTED) {
                     throw new ChatProtocolException("Illegal state for disconnect request: " + state);
                 }
                 if (state == CONNECTED) {
                     connectionRegistry.remove(this.userName);
                 }
-                sendData(USER_NONE, userName, DATA_TYPE_CONFIRM, "Confirm disconnect of " + userName);
+                sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Confirm disconnect of " + userName);
                 this.state = DISCONNECTED;
                 this.stopReceiving();
-            } else if (type.equals(DATA_TYPE_MESSAGE)) {
+            } else if (type.equals(Configuration.DataType.MESSAGE.toString())) {
                 if (state != CONNECTED) throw new ChatProtocolException("Illegal state for message request: " + state);
                 if (USER_ALL.equals(reciever)) {
                     for (ServerConnectionHandler handler : connectionRegistry.values()) {
@@ -169,17 +171,17 @@ public class ServerConnectionHandler implements Runnable{
                     if (handler != null) {
                         handler.sendData(sender, reciever, type, payload);
                     } else {
-                        this.sendData(USER_NONE, userName, DATA_TYPE_ERROR, "Unknown User: " + reciever);
+                        this.sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), "Unknown User: " + reciever);
                     }
                 }
-            } else if (type.equals(DATA_TYPE_ERROR)) {
+            } else if (type.equals(Configuration.DataType.ERROR.toString())) {
                 System.out.println("Received error from client (" + sender + "): " + payload);
             } else {
                 System.out.println("Unknown data type received: " + type);
             }
-        } catch(ChatProtocolException error) {
+        } catch (ChatProtocolException error) {
             System.err.println("Error while processing data: " + error.getMessage());
-            sendData(USER_NONE, userName, DATA_TYPE_ERROR, error.getMessage());
+            sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), error.getMessage());
         }
     }
 
@@ -187,10 +189,10 @@ public class ServerConnectionHandler implements Runnable{
         if (connection.isAvailable()) {
             new StringBuilder();
             String data = new StringBuilder()
-                .append(sender+"\n")
-                .append(receiver+"\n")
-                .append(type+"\n")
-                .append(payload+"\n")
+                .append(sender + "\n")
+                .append(receiver + "\n")
+                .append(type + "\n")
+                .append(payload + "\n")
                 .toString();
             try {
                 connection.send(data);
@@ -198,7 +200,7 @@ public class ServerConnectionHandler implements Runnable{
                 System.err.println("Connection closed: " + e.getMessage());
             } catch (EOFException e) {
                 System.err.println("Connection terminated by remote peer");
-            } catch(IOException e) {
+            } catch (IOException e) {
                 System.err.println("Communication error: " + e.getMessage());
             }
         }
