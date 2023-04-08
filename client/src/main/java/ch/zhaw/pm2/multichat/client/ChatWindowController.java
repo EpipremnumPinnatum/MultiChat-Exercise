@@ -39,6 +39,7 @@ public class ChatWindowController {
     //Todo: public Methoden zuerst, erst dann private
     @FXML
     public void initialize() {
+        blockUserInterface(true);
         serverAddressField.setText(NetworkHandler.DEFAULT_ADDRESS.getCanonicalHostName());
         serverPortField.setText(String.valueOf(NetworkHandler.DEFAULT_PORT));
         stateChanged(NEW);
@@ -58,11 +59,22 @@ public class ChatWindowController {
         }
     }
 
+    /**
+     * Activates/Deactivates the UI elements.
+     * @param isBlocked true to block the UI, false to unblock it.
+     */
+    private void blockUserInterface(boolean isBlocked) {
+        messageField.setDisable(isBlocked);
+        sendButton.setDisable(isBlocked);
+        filterValue.setDisable(isBlocked);
+    }
+
     private void connect() {
         try {
             messages = new ClientMessageList(this); // clear message list
             startConnectionHandler();
             connectionHandler.connect();
+            blockUserInterface(false);
         } catch(ChatProtocolException | IOException e) {
             writeError(e.getMessage());
         }
@@ -75,6 +87,7 @@ public class ChatWindowController {
         }
         try {
             connectionHandler.disconnect();
+            blockUserInterface(true);
         } catch (ChatProtocolException e) {
             writeError(e.getMessage());
         }
