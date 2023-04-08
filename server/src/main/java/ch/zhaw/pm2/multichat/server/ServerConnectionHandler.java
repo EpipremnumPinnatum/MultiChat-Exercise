@@ -15,16 +15,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static ch.zhaw.pm2.multichat.server.ServerConnectionHandler.State.*;
 
 public class ServerConnectionHandler {
-    /** Global counter to generate connection IDs */
+    /**
+     * Global counter to generate connection IDs
+     */
     private static final AtomicInteger connectionCounter = new AtomicInteger(0);
 
-    /** The ID of this connection */
+    /**
+     * The ID of this connection
+     */
     private final int connectionId = connectionCounter.incrementAndGet();
 
-    /** Reference to the registry managing all connections */
-    private final Map<String,ServerConnectionHandler> connectionRegistry;
+    /**
+     * Reference to the registry managing all connections
+     */
+    private final Map<String, ServerConnectionHandler> connectionRegistry;
 
-    /** The network connection to be used for receiving and sending requests */
+    /**
+     * The network connection to be used for receiving and sending requests
+     */
     private final NetworkHandler.NetworkConnection<String> connection;
 
     private static final String USER_NONE = "";
@@ -34,9 +42,11 @@ public class ServerConnectionHandler {
      * The username associated with this connection
      * Using Anonymous-{@link #connectionId} if not specified by the client
      */
-    private String userName = "Anonymous-"+connectionId;
+    private String userName = "Anonymous-" + connectionId;
 
-    /** The current state of this connection */
+    /**
+     * The current state of this connection
+     */
     private State state = NEW;
 
     enum State {
@@ -44,7 +54,7 @@ public class ServerConnectionHandler {
     }
 
     public ServerConnectionHandler(NetworkHandler.NetworkConnection<String> connection,
-                                   Map<String,ServerConnectionHandler> registry) {
+                                   Map<String, ServerConnectionHandler> registry) {
         Objects.requireNonNull(connection, "Connection must not be null");
         Objects.requireNonNull(registry, "Registry must not be null");
         this.connection = connection;
@@ -75,9 +85,9 @@ public class ServerConnectionHandler {
             System.out.println("Connection terminated by remote peer");
             connectionRegistry.remove(userName);
             System.out.println("Unregistered because connection terminated: " + userName + " " + e.getMessage());
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("Communication error: " + e.getMessage());
-        } catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             System.err.println("Received object of unknown type: " + e.getMessage());
         }
         System.out.println("Ended Connection Handler for " + userName);
@@ -166,7 +176,7 @@ public class ServerConnectionHandler {
             } else {
                 System.out.println("Unknown data type received: " + type);
             }
-        } catch(ChatProtocolException error) {
+        } catch (ChatProtocolException error) {
             System.err.println("Error while processing data: " + error.getMessage());
             sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), error.getMessage());
         }
@@ -176,10 +186,10 @@ public class ServerConnectionHandler {
         if (connection.isAvailable()) {
             new StringBuilder();
             String data = new StringBuilder()
-                .append(sender+"\n")
-                .append(receiver+"\n")
-                .append(type+"\n")
-                .append(payload+"\n")
+                .append(sender + "\n")
+                .append(receiver + "\n")
+                .append(type + "\n")
+                .append(payload + "\n")
                 .toString();
             try {
                 connection.send(data);
@@ -187,7 +197,7 @@ public class ServerConnectionHandler {
                 System.err.println("Connection closed: " + e.getMessage());
             } catch (EOFException e) {
                 System.err.println("Connection terminated by remote peer");
-            } catch(IOException e) {
+            } catch (IOException e) {
                 System.err.println("Communication error: " + e.getMessage());
             }
         }

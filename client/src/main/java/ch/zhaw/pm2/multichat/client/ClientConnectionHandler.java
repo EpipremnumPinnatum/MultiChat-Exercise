@@ -33,7 +33,7 @@ public class ClientConnectionHandler implements Runnable {
      */
     private State state = NEW;
 
-    enum State{
+    enum State {
         NEW, CONFIRM_CONNECT, CONNECTED, CONFIRM_DISCONNECT, DISCONNECTED;
     }
 
