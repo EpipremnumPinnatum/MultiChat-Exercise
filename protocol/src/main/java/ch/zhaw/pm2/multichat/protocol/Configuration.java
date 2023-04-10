@@ -11,7 +11,6 @@ public class Configuration {
      * supposed to be sent.
      */
     public enum DataType {
-
         CONNECT("CONNECT"),
         CONFIRM("CONFIRM"),
         DISCONNECT("DISCONNECT"),
@@ -38,5 +37,9 @@ public class Configuration {
      */
     public enum ProtocolState {
         NEW, CONFIRM_CONNECT, CONNECTED, CONFIRM_DISCONNECT, DISCONNECTED
+    }
+
+    public enum MessageType {
+        INFO, MESSAGE, ERROR
     }
 }
