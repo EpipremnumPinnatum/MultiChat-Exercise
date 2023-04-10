@@ -3,6 +3,7 @@ package ch.zhaw.pm2.multichat.client;
 import ch.zhaw.pm2.multichat.protocol.ChatProtocolException;
 import ch.zhaw.pm2.multichat.protocol.Configuration;
 import ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState;
+import ch.zhaw.pm2.multichat.protocol.ConnectionHandler;
 import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -115,7 +116,7 @@ public class ChatWindowController {
         if (matcher.find()) {
             String receiver = matcher.group(1);
             String message = matcher.group(2);
-            if (receiver == null || receiver.isBlank()) receiver = ClientConnectionHandler.USER_ALL;
+            if (receiver == null || receiver.isBlank()) receiver = ConnectionHandler.USER_ALL;
             try {
                 connectionHandler.message(receiver, message);
                 messageField.clear();
