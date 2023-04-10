@@ -164,6 +164,7 @@ public class ServerConnectionHandler implements Runnable {
         }
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleConnect(String sender) throws ChatProtocolException {
         if (this.protocolState != Configuration.ProtocolState.NEW) {
             throw new ChatProtocolException("Illegal state for connect request: " + protocolState);
@@ -180,10 +181,12 @@ public class ServerConnectionHandler implements Runnable {
         this.protocolState = Configuration.ProtocolState.CONNECTED;
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleConfirm() {
         System.out.println("Not expecting to receive a CONFIRM request from client");
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleDisconnect() throws ChatProtocolException {
         if (protocolState == Configuration.ProtocolState.DISCONNECTED) {
             throw new ChatProtocolException("Illegal state for disconnect request: " + protocolState);
@@ -196,6 +199,7 @@ public class ServerConnectionHandler implements Runnable {
         this.stopReceiving();
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleMessage(String sender, String receiver, String payload) throws ChatProtocolException {
         if (protocolState != Configuration.ProtocolState.CONNECTED) {
             throw new ChatProtocolException("Illegal state for message request: " + protocolState);
@@ -214,10 +218,12 @@ public class ServerConnectionHandler implements Runnable {
         }
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleError(String sender, String payload) {
         System.out.println("Received error from client (" + sender + "): " + payload);
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleDefault(Configuration.DataType dataType) {
         System.out.println("Unknown data type received: " + dataType);
     }

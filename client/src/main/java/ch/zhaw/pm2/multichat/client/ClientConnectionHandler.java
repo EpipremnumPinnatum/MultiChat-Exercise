@@ -193,10 +193,12 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleConnect() {
         System.err.println("Illegal connect request from server");
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleConfirm(String receiver, String payload) {
         if (protocolState == CONFIRM_CONNECT) {
             this.userName = receiver;
@@ -215,6 +217,7 @@ public class ClientConnectionHandler implements Runnable {
         }
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleDisconnect(String payload) {
         if (protocolState == DISCONNECTED) {
             System.out.println("DISCONNECT: Already in disconnected: " + payload);
@@ -225,6 +228,7 @@ public class ClientConnectionHandler implements Runnable {
         this.setState(DISCONNECTED);
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleMessage(String sender, String receiver, String payload) {
         if (protocolState != CONNECTED) {
             System.out.println("MESSAGE: Illegal state " + protocolState + " for message: " + payload);
@@ -234,11 +238,13 @@ public class ClientConnectionHandler implements Runnable {
         System.out.println("MESSAGE: From " + sender + " to " + receiver + ": " + payload);
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleError(String payload) {
         controller.addError(payload);
         System.out.println("ERROR: " + payload);
     }
 
+    // ToDo: Overwrite when implementing issue #28
     private void handleDefault(Configuration.DataType type) {
         System.out.println("Unknown data type received: " + type);
     }
