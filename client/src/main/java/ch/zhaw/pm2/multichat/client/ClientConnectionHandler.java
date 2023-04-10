@@ -122,69 +122,13 @@ public class ClientConnectionHandler implements Runnable {
         try {
             // parse data content
             Scanner scanner = new Scanner(data);
-            String sender = null;
-            String reciever = null;
-            String type = null;
-            String payload = null;
-            if (scanner.hasNextLine()) {
-                sender = scanner.nextLine();
-            } else {
-                throw new ChatProtocolException("No Sender found");
-            }
-            if (scanner.hasNextLine()) {
-                reciever = scanner.nextLine();
-            } else {
-                throw new ChatProtocolException("No Reciever found");
-            }
-            if (scanner.hasNextLine()) {
-                type = scanner.nextLine();
-            } else {
-                throw new ChatProtocolException("No Type found");
-            }
-            if (scanner.hasNextLine()) {
-                payload = scanner.nextLine();
-            }
+            String sender = readField(scanner, "Sender");
+            String receiver = readField(scanner, "Receiver");
+            String type = readField(scanner, "Type");
+            String payload = readField(scanner, "Payload");
 
             // dispatch operation based on type parameter
-            if (type.equals(CONNECT.toString())) {
-                System.err.println("Illegal connect request from server");
-            } else if (type.equals(CONFIRM.toString())) {
-                if (protocolState == CONFIRM_CONNECT) {
-                    this.userName = reciever;
-                    controller.setUserName(userName);
-                    controller.setServerPort(connection.getRemotePort());
-                    controller.setServerAddress(connection.getRemoteHost());
-                    controller.addInfo(payload);
-                    System.out.println("CONFIRM: " + payload);
-                    this.setState(CONNECTED);
-                } else if (protocolState == CONFIRM_DISCONNECT) {
-                    controller.addInfo(payload);
-                    System.out.println("CONFIRM: " + payload);
-                    this.setState(DISCONNECTED);
-                } else {
-                    System.err.println("Got unexpected confirm message: " + payload);
-                }
-            } else if (type.equals(DISCONNECT.toString())) {
-                if (protocolState == DISCONNECTED) {
-                    System.out.println("DISCONNECT: Already in disconnected: " + payload);
-                    return;
-                }
-                controller.addInfo(payload);
-                System.out.println("DISCONNECT: " + payload);
-                this.setState(DISCONNECTED);
-            } else if (type.equals(MESSAGE.toString())) {
-                if (protocolState != CONNECTED) {
-                    System.out.println("MESSAGE: Illegal state " + protocolState + " for message: " + payload);
-                    return;
-                }
-                controller.addMessage(sender, reciever, payload);
-                System.out.println("MESSAGE: From " + sender + " to " + reciever + ": " + payload);
-            } else if (type.equals(ERROR.toString())) {
-                controller.addError(payload);
-                System.out.println("ERROR: " + payload);
-            } else {
-                System.out.println("Unknown data type received: " + type);
-            }
+            handleRequest(sender, receiver, Configuration.DataType.valueOf(type), payload);
         } catch (ChatProtocolException error) {
             System.err.println("Error while processing data: " + error.getMessage());
             sendData(USER_NONE, userName, ERROR.toString(), error.getMessage());
@@ -230,4 +174,72 @@ public class ClientConnectionHandler implements Runnable {
         this.sendData(userName, receiver, MESSAGE.toString(), message);
     }
 
+    private static String readField(Scanner scanner, String fieldName) throws ChatProtocolException {
+        if (scanner.hasNextLine()) {
+            return scanner.nextLine();
+        } else {
+            throw new ChatProtocolException(fieldName + " not found");
+        }
+    }
+
+    private void handleRequest(String sender, String receiver, Configuration.DataType dataType, String payload) throws ChatProtocolException {
+        switch (dataType) {
+            case CONNECT -> handleConnect();
+            case CONFIRM -> handleConfirm(receiver, payload);
+            case DISCONNECT -> handleDisconnect(payload);
+            case MESSAGE -> handleMessage(sender, receiver, payload);
+            case ERROR -> handleError(payload);
+            default -> handleDefault(dataType);
+        }
+    }
+
+    private void handleConnect() {
+        System.err.println("Illegal connect request from server");
+    }
+
+    private void handleConfirm(String receiver, String payload) {
+        if (protocolState == CONFIRM_CONNECT) {
+            this.userName = receiver;
+            controller.setUserName(userName);
+            controller.setServerPort(connection.getRemotePort());
+            controller.setServerAddress(connection.getRemoteHost());
+            controller.addInfo(payload);
+            System.out.println("CONFIRM: " + payload);
+            this.setState(CONNECTED);
+        } else if (protocolState == CONFIRM_DISCONNECT) {
+            controller.addInfo(payload);
+            System.out.println("CONFIRM: " + payload);
+            this.setState(DISCONNECTED);
+        } else {
+            System.err.println("Got unexpected confirm message: " + payload);
+        }
+    }
+
+    private void handleDisconnect(String payload) {
+        if (protocolState == DISCONNECTED) {
+            System.out.println("DISCONNECT: Already in disconnected: " + payload);
+            return;
+        }
+        controller.addInfo(payload);
+        System.out.println("DISCONNECT: " + payload);
+        this.setState(DISCONNECTED);
+    }
+
+    private void handleMessage(String sender, String receiver, String payload) {
+        if (protocolState != CONNECTED) {
+            System.out.println("MESSAGE: Illegal state " + protocolState + " for message: " + payload);
+            return;
+        }
+        controller.addMessage(sender, receiver, payload);
+        System.out.println("MESSAGE: From " + sender + " to " + receiver + ": " + payload);
+    }
+
+    private void handleError(String payload) {
+        controller.addError(payload);
+        System.out.println("ERROR: " + payload);
+    }
+
+    private void handleDefault(Configuration.DataType type) {
+        System.out.println("Unknown data type received: " + type);
+    }
 }
