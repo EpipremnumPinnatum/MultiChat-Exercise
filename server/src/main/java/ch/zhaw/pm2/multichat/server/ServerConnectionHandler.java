@@ -12,8 +12,10 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ServerConnectionHandler implements Runnable{
-    /** Global counter to generate connection IDs */
+public class ServerConnectionHandler implements Runnable {
+    /**
+     * Global counter to generate connection IDs
+     */
     private static final AtomicInteger connectionCounter = new AtomicInteger(0);
 
     /**
@@ -105,83 +107,6 @@ public class ServerConnectionHandler implements Runnable{
         System.out.println("Closed Connection Handler for " + userName);
     }
 
-    //Todo: extrem lange Methode, in verschiedene Methoden unterteilen
-    private void processData(String data) {
-        try {
-            // parse data content
-            Scanner scanner = new Scanner(data);
-            String sender = null;
-            String reciever = null;
-            String type = null;
-            String payload = null;
-            if (scanner.hasNextLine()) {
-                sender = scanner.nextLine();
-            } else {
-                throw new ChatProtocolException("No Sender found");
-            }
-            if (scanner.hasNextLine()) {
-                reciever = scanner.nextLine();
-            } else {
-                throw new ChatProtocolException("No Reciever found");
-            }
-            if (scanner.hasNextLine()) {
-                type = scanner.nextLine();
-            } else {
-                throw new ChatProtocolException("No Type found");
-            }
-            if (scanner.hasNextLine()) {
-                payload = scanner.nextLine();
-            }
-
-            // dispatch operation based on type parameter
-            if (type.equals(Configuration.DataType.CONNECT.toString())) {
-                if (this.protocolState != Configuration.ProtocolState.NEW)
-                    throw new ChatProtocolException("Illegal state for connect request: " + protocolState);
-                if (sender == null || sender.isBlank()) sender = this.userName;
-                if (connectionRegistry.containsKey(sender))
-                    throw new ChatProtocolException("User name already taken: " + sender);
-                this.userName = sender;
-                connectionRegistry.put(userName, this);
-                sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Registration successfull for " + userName);
-                this.protocolState = Configuration.ProtocolState.CONNECTED;
-            } else if (type.equals(Configuration.DataType.CONFIRM.toString())) {
-                System.out.println("Not expecting to receive a CONFIRM request from client");
-            } else if (type.equals(Configuration.DataType.DISCONNECT.toString())) {
-                if (protocolState == Configuration.ProtocolState.DISCONNECTED) {
-                    throw new ChatProtocolException("Illegal state for disconnect request: " + protocolState);
-                }
-                if (protocolState == Configuration.ProtocolState.CONNECTED) {
-                    connectionRegistry.remove(this.userName);
-                }
-                sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Confirm disconnect of " + userName);
-                this.protocolState = Configuration.ProtocolState.DISCONNECTED;
-                this.stopReceiving();
-            } else if (type.equals(Configuration.DataType.MESSAGE.toString())) {
-                if (protocolState != Configuration.ProtocolState.CONNECTED)
-                    throw new ChatProtocolException("Illegal state for message request: " + protocolState);
-                if (USER_ALL.equals(reciever)) {
-                    for (ServerConnectionHandler handler : connectionRegistry.values()) {
-                        handler.sendData(sender, reciever, type, payload);
-                    }
-                } else {
-                    ServerConnectionHandler handler = connectionRegistry.get(reciever);
-                    if (handler != null) {
-                        handler.sendData(sender, reciever, type, payload);
-                    } else {
-                        this.sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), "Unknown User: " + reciever);
-                    }
-                }
-            } else if (type.equals(Configuration.DataType.ERROR.toString())) {
-                System.out.println("Received error from client (" + sender + "): " + payload);
-            } else {
-                System.out.println("Unknown data type received: " + type);
-            }
-        } catch (ChatProtocolException error) {
-            System.err.println("Error while processing data: " + error.getMessage());
-            sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), error.getMessage());
-        }
-    }
-
     public void sendData(String sender, String receiver, String type, String payload) {
         if (connection.isAvailable()) {
             new StringBuilder();
@@ -201,5 +126,105 @@ public class ServerConnectionHandler implements Runnable{
                 System.err.println("Communication error: " + e.getMessage());
             }
         }
+    }
+
+    private void processData(String data) {
+        try {
+            // parse data content
+            Scanner scanner = new Scanner(data);
+            String sender = readField(scanner, "Sender");
+            String receiver = readField(scanner, "Receiver");
+            String type = readField(scanner, "Type");
+            String payload = readField(scanner, "Payload");
+
+            // dispatch operation based on type parameter
+            handleRequest(sender, receiver, Configuration.DataType.valueOf(type), payload);
+        } catch (ChatProtocolException error) {
+            System.err.println("Error while processing data: " + error.getMessage());
+            sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), error.getMessage());
+        }
+    }
+
+    private static String readField(Scanner scanner, String fieldName) throws ChatProtocolException {
+        if (scanner.hasNextLine()) {
+            return scanner.nextLine();
+        } else {
+            throw new ChatProtocolException(fieldName + " not found");
+        }
+    }
+
+    private void handleRequest(String sender, String receiver, Configuration.DataType dataType, String payload) throws ChatProtocolException {
+        switch (dataType) {
+            case CONNECT -> handleConnect(sender);
+            case CONFIRM -> handleConfirm();
+            case DISCONNECT -> handleDisconnect();
+            case MESSAGE -> handleMessage(sender, receiver, payload);
+            case ERROR -> handleError(sender, payload);
+            default -> handleDefault(dataType);
+        }
+    }
+
+    // ToDo: Overwrite when implementing issue #28
+    private void handleConnect(String sender) throws ChatProtocolException {
+        if (this.protocolState != Configuration.ProtocolState.NEW) {
+            throw new ChatProtocolException("Illegal state for connect request: " + protocolState);
+        }
+        if (sender == null || sender.isBlank()) {
+            sender = this.userName;
+        }
+        if (connectionRegistry.containsKey(sender)) {
+            throw new ChatProtocolException("User name already taken: " + sender);
+        }
+        this.userName = sender;
+        connectionRegistry.put(userName, this);
+        sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Registration successfull for " + userName);
+        this.protocolState = Configuration.ProtocolState.CONNECTED;
+    }
+
+    // ToDo: Overwrite when implementing issue #28
+    private void handleConfirm() {
+        System.out.println("Not expecting to receive a CONFIRM request from client");
+    }
+
+    // ToDo: Overwrite when implementing issue #28
+    private void handleDisconnect() throws ChatProtocolException {
+        if (protocolState == Configuration.ProtocolState.DISCONNECTED) {
+            throw new ChatProtocolException("Illegal state for disconnect request: " + protocolState);
+        }
+        if (protocolState == Configuration.ProtocolState.CONNECTED) {
+            connectionRegistry.remove(this.userName);
+        }
+        sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Confirm disconnect of " + userName);
+        this.protocolState = Configuration.ProtocolState.DISCONNECTED;
+        this.stopReceiving();
+    }
+
+    // ToDo: Overwrite when implementing issue #28
+    private void handleMessage(String sender, String receiver, String payload) throws ChatProtocolException {
+        if (protocolState != Configuration.ProtocolState.CONNECTED) {
+            throw new ChatProtocolException("Illegal state for message request: " + protocolState);
+        }
+        if (USER_ALL.equals(receiver)) {
+            for (ServerConnectionHandler handler : connectionRegistry.values()) {
+                handler.sendData(sender, receiver, Configuration.DataType.MESSAGE.toString(), payload);
+            }
+        } else {
+            ServerConnectionHandler handler = connectionRegistry.get(receiver);
+            if (handler != null) {
+                handler.sendData(sender, receiver, Configuration.DataType.MESSAGE.toString(), payload);
+            } else {
+                this.sendData(USER_NONE, userName, Configuration.DataType.ERROR.toString(), "Unknown User: " + receiver);
+            }
+        }
+    }
+
+    // ToDo: Overwrite when implementing issue #28
+    private void handleError(String sender, String payload) {
+        System.out.println("Received error from client (" + sender + "): " + payload);
+    }
+
+    // ToDo: Overwrite when implementing issue #28
+    private void handleDefault(Configuration.DataType dataType) {
+        System.out.println("Unknown data type received: " + dataType);
     }
 }
