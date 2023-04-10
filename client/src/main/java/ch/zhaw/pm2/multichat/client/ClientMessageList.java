@@ -1,8 +1,12 @@
 package ch.zhaw.pm2.multichat.client;
 
+import ch.zhaw.pm2.multichat.protocol.Configuration;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static ch.zhaw.pm2.multichat.protocol.Configuration.MessageType;
 
 public class ClientMessageList {
     private final List<MessageType> typeList = new ArrayList<>();
@@ -15,7 +19,7 @@ public class ClientMessageList {
 		this.gui = gui;
 	}
 
-    public void addMessage(MessageType type, String sender, String receiver, String message) {
+    public void addMessage(Configuration.MessageType type, String sender, String receiver, String message) {
 	    typeList.add(type);
     	senderList.add(sender);
     	receiverList.add(receiver);
@@ -43,9 +47,4 @@ public class ClientMessageList {
 			}
 		}
 	}
-
-    public enum MessageType {
-        INFO, MESSAGE, ERROR;
-    }
-
 }

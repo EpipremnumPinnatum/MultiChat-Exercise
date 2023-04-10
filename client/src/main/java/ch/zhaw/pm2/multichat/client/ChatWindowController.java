@@ -1,7 +1,8 @@
 package ch.zhaw.pm2.multichat.client;
 
-import ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState;
 import ch.zhaw.pm2.multichat.protocol.ChatProtocolException;
+import ch.zhaw.pm2.multichat.protocol.Configuration;
+import ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState;
 import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -25,15 +26,24 @@ public class ChatWindowController {
 
     private final WindowCloseHandler windowCloseHandler = new WindowCloseHandler();
 
-    @FXML private Pane rootPane;
-    @FXML private TextField serverAddressField;
-    @FXML private TextField serverPortField;
-    @FXML private TextField userNameField;
-    @FXML private TextField messageField;
-    @FXML private TextArea messageArea;
-    @FXML private Button connectButton;
-    @FXML private Button sendButton; //Todo: (Funktionaler Fehler) send button does nothing
-    @FXML private TextField filterValue;
+    @FXML
+    private Pane rootPane;
+    @FXML
+    private TextField serverAddressField;
+    @FXML
+    private TextField serverPortField;
+    @FXML
+    private TextField userNameField;
+    @FXML
+    private TextField messageField;
+    @FXML
+    private TextArea messageArea;
+    @FXML
+    private Button connectButton;
+    @FXML
+    private Button sendButton; //Todo: (Funktionaler Fehler) send button does nothing
+    @FXML
+    private TextField filterValue;
 
     //Todo:Write javadoc
     //Todo: public Methoden zuerst, erst dann private
@@ -61,6 +71,7 @@ public class ChatWindowController {
 
     /**
      * Activates/Deactivates the UI elements.
+     *
      * @param isBlocked true to block the UI, false to unblock it.
      */
     private void blockUserInterface(boolean isBlocked) {
@@ -75,7 +86,7 @@ public class ChatWindowController {
             startConnectionHandler();
             connectionHandler.connect();
             blockUserInterface(false);
-        } catch(ChatProtocolException | IOException e) {
+        } catch (ChatProtocolException | IOException e) {
             writeError(e.getMessage());
         }
     }
@@ -192,19 +203,19 @@ public class ChatWindowController {
 
     //Todo;javadoc
     public void addMessage(String sender, String receiver, String message) {
-        messages.addMessage(ClientMessageList.MessageType.MESSAGE, sender, receiver, message);
+        messages.addMessage(Configuration.MessageType.MESSAGE, sender, receiver, message);
         this.redrawMessageList();
     }
 
     //Todo;javadoc
     public void addInfo(String message) {
-        messages.addMessage(ClientMessageList.MessageType.INFO, null, null, message);
+        messages.addMessage(Configuration.MessageType.INFO, null, null, message);
         this.redrawMessageList();
     }
 
     //Todo;javadoc
     public void addError(String message) {
-        messages.addMessage(ClientMessageList.MessageType.ERROR, null, null, message);
+        messages.addMessage(Configuration.MessageType.ERROR, null, null, message);
         this.redrawMessageList();
     }
 
@@ -237,8 +248,6 @@ public class ChatWindowController {
         }
 
     }
-
-
 
 
 }
