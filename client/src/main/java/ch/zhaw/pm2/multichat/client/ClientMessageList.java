@@ -38,17 +38,10 @@ public class ClientMessageList {
                 receiver.contains(filter) ||
                 message.contains(filter)) {
                 switch (typeList.get(i)) {
-                    case MESSAGE:
-                        gui.writeMessage(senderList.get(i), receiverList.get(i), messageList.get(i));
-                        break;
-                    case ERROR:
-                        gui.writeError(messageList.get(i));
-                        break;
-                    case INFO:
-                        gui.writeInfo(messageList.get(i));
-                        break;
-                    default:
-                        gui.writeError("Unexpected message type: " + typeList.get(i));
+                    case MESSAGE -> gui.writeMessage(senderList.get(i), receiverList.get(i), messageList.get(i));
+                    case ERROR -> gui.writeError(messageList.get(i));
+                    case INFO -> gui.writeInfo(messageList.get(i));
+                    default -> gui.writeError("Unexpected message type: " + typeList.get(i));
                 }
             }
         }
