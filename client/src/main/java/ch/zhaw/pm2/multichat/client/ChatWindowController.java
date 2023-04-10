@@ -87,19 +87,26 @@ public class ChatWindowController {
             startConnectionHandler();
             connectionHandler.connect();
             blockUserInterface(false);
+            messageField.requestFocus();
         } catch (ChatProtocolException | IOException e) {
             writeError(e.getMessage());
         }
     }
 
-    private void disconnect() {
+    public void disconnect() {
         if (connectionHandler == null) {
             writeError("No connection handler");
             return;
         }
         try {
-            connectionHandler.disconnect();
             blockUserInterface(true);
+            userNameField.clear();
+            connectionHandler.disconnect();
+            try {
+                userNameField.requestFocus();
+            } catch (IllegalStateException e) {
+                System.out.println("Could not focus on username field");
+            }
         } catch (ChatProtocolException e) {
             writeError(e.getMessage());
         }
