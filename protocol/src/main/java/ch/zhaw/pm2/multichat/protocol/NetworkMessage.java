@@ -1,6 +1,8 @@
 package ch.zhaw.pm2.multichat.protocol;
 
-public class NetworkMessage {
+import java.io.Serializable;
+
+public class NetworkMessage implements Serializable {
     private final String sender;
     private final String receiver;
     private final Configuration.DataType type;
