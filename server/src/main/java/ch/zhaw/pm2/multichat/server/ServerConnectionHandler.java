@@ -177,7 +177,7 @@ public class ServerConnectionHandler implements Runnable {
         }
         this.userName = sender;
         connectionRegistry.put(userName, this);
-        sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Registration successfull for " + userName);
+        sendData(USER_NONE, userName, Configuration.DataType.CONFIRM.toString(), "Registration successful for " + userName);
         this.protocolState = Configuration.ProtocolState.CONNECTED;
     }
 
