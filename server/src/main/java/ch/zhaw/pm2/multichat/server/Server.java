@@ -93,6 +93,7 @@ public class Server {
 
     /**
      * Start the server.
+     * <p>
      * Opens a network server and waits for incoming connections.
      * For each connection a new {@link ServerConnectionHandler} is created and started in a new thread.
      * If the network server is closed, all connections are closed and the server is stopped.
