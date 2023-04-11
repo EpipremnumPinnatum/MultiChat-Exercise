@@ -31,7 +31,6 @@ The issues have been split into two main categories:
 - [Functional Issues](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+label%3Afunctional) - Issues related to functionality that doesn't work as specified.
 
 
-
 The following important structural/functional issues have been found:
 
 ### Structural Issues
