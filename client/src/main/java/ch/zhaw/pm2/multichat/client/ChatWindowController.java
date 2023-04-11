@@ -211,7 +211,7 @@ public class ChatWindowController implements ClientConnectionObserver {
     private void connect() {
         try {
             ClientConnectionObserver observer = this;
-            messages = new ClientMessageList(observer); // clear message list
+            messages = new ClientMessageList(observer);
             startConnectionHandler();
             connectionHandler.connect();
             blockUserInterface(false);
