@@ -16,6 +16,10 @@ public class Server {
      * Network server for incoming connections.
      */
     private NetworkHandler.NetworkServer<NetworkMessage> networkServer;
+    /**
+     * Network server for incoming connections.
+     */
+    private NetworkHandler.NetworkServer<String> networkServer;
 
     private static ExecutorService executorService;
 
