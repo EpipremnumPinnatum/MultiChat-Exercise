@@ -36,15 +36,15 @@ public class ClientMessageList {
     /**
      * The GUI used to display messages.
      */
-    private final ChatWindowController gui;
+    private final ClientConnectionObserver observer;
 
     /**
      * Constructor for the ClientMessageList class.
      *
-     * @param gui an instance of the ChatWindowController class used to display messages.
+     * @param observer an instance of the ClientConnectionObserver class used to display messages.
      */
-    public ClientMessageList(ChatWindowController gui) {
-        this.gui = gui;
+    public ClientMessageList(ClientConnectionObserver observer) {
+        this.observer = observer;
     }
 
     /**
@@ -69,7 +69,7 @@ public class ClientMessageList {
      */
     public void writeFilteredMessages(String filter) {
         boolean showAll = filter == null || filter.isBlank();
-        gui.clearMessageArea();
+        observer.clearMessageArea();
         for (int i = 0; i < senderList.size(); i++) {
             String sender = Objects.requireNonNullElse(senderList.get(i), "");
             String receiver = Objects.requireNonNullElse(receiverList.get(i), "");
@@ -79,10 +79,10 @@ public class ClientMessageList {
                 receiver.contains(filter) ||
                 message.contains(filter)) {
                 switch (typeList.get(i)) {
-                    case MESSAGE -> gui.writeMessage(senderList.get(i), receiverList.get(i), messageList.get(i));
-                    case ERROR -> gui.writeError(messageList.get(i));
-                    case INFO -> gui.writeInfo(messageList.get(i));
-                    default -> gui.writeError("Unexpected message type: " + typeList.get(i));
+                    case MESSAGE -> observer.writeMessage(senderList.get(i), receiverList.get(i), messageList.get(i));
+                    case ERROR -> observer.writeError(messageList.get(i));
+                    case INFO -> observer.writeInfo(messageList.get(i));
+                    default -> observer.writeError("Unexpected message type: " + typeList.get(i));
                 }
             }
         }
