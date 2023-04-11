@@ -1,9 +1,6 @@
 package ch.zhaw.pm2.multichat.server;
 
-import ch.zhaw.pm2.multichat.protocol.ChatProtocolException;
-import ch.zhaw.pm2.multichat.protocol.ConnectionHandler;
-import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
-import ch.zhaw.pm2.multichat.protocol.NetworkMessage;
+import ch.zhaw.pm2.multichat.protocol.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +21,11 @@ public class ServerConnectionHandler extends ConnectionHandler implements Runnab
      */
     private final Map<String, ServerConnectionHandler> connectionRegistry;
 
+    @Override
+    public void run() {
+        startReceiving();
+    }
+
     public ServerConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection,
                                    Map<String, ServerConnectionHandler> registry) {
         super(connection);
@@ -31,11 +33,6 @@ public class ServerConnectionHandler extends ConnectionHandler implements Runnab
         Objects.requireNonNull(registry, "Registry must not be null");
         this.connectionRegistry = registry;
         userName = "Anonymous-" + connectionCounter.incrementAndGet();
-    }
-
-    @Override
-    public void run() {
-        startReceiving();
     }
 
     @Override
