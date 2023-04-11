@@ -22,7 +22,7 @@ import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
 
 public class ChatWindowController {
     private final Pattern messagePattern = Pattern.compile("^(?:@(\\w*))?\\s*(.*)$");//Todo: What does it? needs a comment
-    private ClientConnectionHandler connectionHandler;//Todo: (Funktionaler Fehler)  connectionHandler is null
+    private ClientConnectionHandler connectionHandler;
     private ClientMessageList messages;
 
     private final WindowCloseHandler windowCloseHandler = new WindowCloseHandler();
