@@ -83,7 +83,6 @@ public class ChatWindowController implements ClientConnectionObserver {
      * @param newProtocolState uses the enumerator that describes the protocol state
      */
     public void stateChanged(ProtocolState newProtocolState) {
-        // update UI (need to be run in UI thread: see Platform.runLater())
         Platform.runLater(() -> connectButton.setText((newProtocolState == CONNECTED || newProtocolState == CONFIRM_DISCONNECT) ? "Disconnect" : "Connect"));
         if (newProtocolState == DISCONNECTED) {
             blockUserInterface(true);

@@ -30,10 +30,7 @@ public class ClientUI extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("ChatWindow.fxml"));
             Pane rootPane = loader.load();
-            // fill in scene and stage setup
             Scene scene = new Scene(rootPane);
-
-            // configure and show stage
             primaryStage.setScene(scene);
             primaryStage.setMinWidth(420);
             primaryStage.setMinHeight(250);

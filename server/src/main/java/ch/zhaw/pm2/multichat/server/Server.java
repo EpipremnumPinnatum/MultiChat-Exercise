@@ -37,7 +37,6 @@ public class Server {
      */
     public static void main(String[] args) {
         Server server = null;
-        // Parse arguments for server port.
         try {
             int port;
             switch (args.length) {
@@ -48,9 +47,7 @@ public class Server {
                     return;
                 }
             }
-            // Initialize server
             server = new Server(port);
-            // Start server
             server.start();
         } catch (IOException e) {
             System.err.println("Error while starting server. " + e.getMessage());
@@ -71,7 +68,6 @@ public class Server {
      * @throws IOException If the server could not be created.
      */
     public Server(int serverPort) throws IOException {
-        // Open server connection
         System.out.println("Create server connection");
         executorService = Executors.newCachedThreadPool();
         networkServer = NetworkHandler.createServer(serverPort);
@@ -114,7 +110,6 @@ public class Server {
                 System.out.println("Warning: Connect failed " + e.getMessage());
             }
         }
-        // close server
         System.out.println("Server Stopped.");
     }
 }

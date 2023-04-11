@@ -12,7 +12,6 @@ public class Client {
      * @param args command-line arguments passed to the application (ignored)
      */
     public static void main(String[] args) {
-        // Start UI
         System.out.println("Starting Client Application");
         Application.launch(ClientUI.class, args);
         System.out.println("Client Application ended");
