@@ -99,7 +99,6 @@ public class Server {
      */
     private void start() {
         System.out.println("Server started.");
-        //TODO: (Funktional) Separate Threads um Nachrichten von allen Clients zu lesen.
         while (networkServer.isAvailable()) {
             try {
                 NetworkHandler.NetworkConnection<NetworkMessage> connection = networkServer.waitForConnection();
