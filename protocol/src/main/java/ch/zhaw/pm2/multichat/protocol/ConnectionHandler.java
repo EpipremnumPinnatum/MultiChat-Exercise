@@ -3,7 +3,6 @@ package ch.zhaw.pm2.multichat.protocol;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Scanner;
 
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.ERROR;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.NEW;
@@ -15,16 +14,16 @@ public abstract class ConnectionHandler {
     protected static final String USER_NONE = "";
     protected String userName = USER_NONE;
 
-    protected ConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection) {
-        this.connection = connection;
-    }
-
     public String getUserName() {
         return this.userName;
     }
 
     public Configuration.ProtocolState getState() {
         return protocolState;
+    }
+
+    protected ConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection) {
+        this.connection = connection;
     }
 
     /**

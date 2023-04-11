@@ -2,16 +2,13 @@ package ch.zhaw.pm2.multichat.client;
 
 import ch.zhaw.pm2.multichat.protocol.*;
 
-import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.*;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType;
+import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.*;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
-
-//Todo: write javadoc
 
 /**
  * This class handles the communication with the server
  */
-
 public class ClientConnectionHandler extends ConnectionHandler implements Runnable {
     private final ChatWindowController controller;
 
@@ -27,17 +24,6 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
     public void setState(Configuration.ProtocolState newProtocolState) {
         this.protocolState = newProtocolState;
         controller.stateChanged(newProtocolState);
-    }
-
-    /**
-     * Start the connection handler.
-     * It will start listening for incoming messages from the server and process them.
-     */
-    @Override
-    public void run() {
-        System.out.println("Starting Connection Handler");
-        startReceiving();
-        System.out.println("Ended Connection Handler");
     }
 
     /**
@@ -65,6 +51,17 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
     public void message(String receiver, String message) throws ChatProtocolException {
         if (protocolState != CONNECTED) throw new ChatProtocolException("Illegal state for message: " + protocolState);
         this.sendData(userName, receiver, MESSAGE, message);
+    }
+
+    /**
+     * Start the connection handler.
+     * It will start listening for incoming messages from the server and process them.
+     */
+    @Override
+    public void run() {
+        System.out.println("Starting Connection Handler");
+        startReceiving();
+        System.out.println("Ended Connection Handler");
     }
 
     @Override
