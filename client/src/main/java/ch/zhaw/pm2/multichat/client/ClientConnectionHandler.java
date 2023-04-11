@@ -9,7 +9,7 @@ import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
 //Todo: write javadoc
 
 /**
- * This class handles the communication with the server
+ * This class handles the communication with the server,
  */
 
 public class ClientConnectionHandler extends ConnectionHandler implements Runnable {
