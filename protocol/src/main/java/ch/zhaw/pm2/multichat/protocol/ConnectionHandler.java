@@ -20,7 +20,7 @@ public abstract class ConnectionHandler {
     /**
      * The network connection for this connection handler.
      */
-    protected NetworkHandler.NetworkConnection<NetworkMessage> connection;
+    protected final NetworkHandler.NetworkConnection<NetworkMessage> connection;
 
     /**
      * The current protocol state of this connection handler.
@@ -71,7 +71,6 @@ public abstract class ConnectionHandler {
     protected void startReceiving() {
         try {
             System.out.println("Start receiving data...");
-            //TODO: (Funktional) Separater Thread für das Warten auf neue Nachrichten, rest der Applikation blockiert
             while (connection.isAvailable()) {
                 NetworkMessage data = connection.receive();
                 processData(data);
