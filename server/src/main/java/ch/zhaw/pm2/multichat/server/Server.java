@@ -16,10 +16,6 @@ public class Server {
      * Network server for incoming connections.
      */
     private NetworkHandler.NetworkServer<NetworkMessage> networkServer;
-    /**
-     * Network server for incoming connections.
-     */
-    private NetworkHandler.NetworkServer<String> networkServer;
 
     private static ExecutorService executorService;
 
@@ -79,7 +75,6 @@ public class Server {
         System.out.printf("Listening on %s:%d%n", networkServer.getHostAddress(), networkServer.getHostPort());
     }
 
-
     /**
      * Terminate the server.
      * Closes the network server, which will terminate the server and close all connections.
@@ -92,7 +87,6 @@ public class Server {
             System.err.println("Failed to close server connection: " + e.getMessage());
         }
     }
-
 
     /**
      * Start the server.
@@ -120,5 +114,4 @@ public class Server {
         // close server
         System.out.println("Server Stopped.");
     }
-
 }

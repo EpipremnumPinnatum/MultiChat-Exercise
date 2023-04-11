@@ -252,8 +252,5 @@ public class ChatWindowController {
         public void handle(WindowEvent event) {
             applicationClose();
         }
-
     }
-
-
 }
