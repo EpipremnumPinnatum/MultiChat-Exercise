@@ -62,6 +62,91 @@ public class ChatWindowController {
      *
      * @param newProtocolState uses the enumerator that describes the protocol state
      */
+    private void blockUserInterface(boolean isBlocked) {
+        messageField.setDisable(isBlocked);
+        sendButton.setDisable(isBlocked);
+        filterValue.setDisable(isBlocked);
+    }
+
+    private void connect() {
+        try {
+            messages = new ClientMessageList(this); // clear message list
+            startConnectionHandler();
+            connectionHandler.connect();
+            blockUserInterface(false);
+            messageField.requestFocus();
+        } catch (ChatProtocolException | IOException e) {
+            writeError(e.getMessage());
+        }
+    }
+
+    private void disconnect() {
+        if (connectionHandler == null) {
+            writeError("No connection handler");
+            return;
+        }
+        try {
+            blockUserInterface(true);
+            connectionHandler.disconnect();
+        } catch (ChatProtocolException e) {
+            writeError(e.getMessage());
+        }
+    }
+
+    @FXML
+    private void message() {
+        if (connectionHandler == null) {
+            writeError("No connection handler");
+            return;
+        }
+        String messageString = messageField.getText().strip();
+        Matcher matcher = messagePattern.matcher(messageString);
+        if (matcher.find()) {
+            String receiver = matcher.group(1);
+            String message = matcher.group(2);
+            if (receiver == null || receiver.isBlank()) receiver = ConnectionHandler.USER_ALL;
+            try {
+                connectionHandler.message(receiver, message);
+                messageField.clear();
+                messageField.requestFocus();
+            } catch (ChatProtocolException e) {
+                writeError(e.getMessage());
+            }
+        } else {
+            writeError("Not a valid message format.");
+        }
+    }
+
+    @FXML
+    private void applyFilter() {
+        this.redrawMessageList();
+    }
+
+    //Todo: (funktionaler Fehler) should be called to create the connection handler
+    private void startConnectionHandler() throws IOException {
+        String userName = userNameField.getText();
+        String serverAddress = serverAddressField.getText();
+        int serverPort = Integer.parseInt(serverPortField.getText());
+        connectionHandler = new ClientConnectionHandler(
+            NetworkHandler.openConnection(serverAddress, serverPort), userName,
+            this);
+        new Thread(connectionHandler).start();
+
+        // register window close handler
+        rootPane.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
+    }
+
+    //Todo;javadoc
+    private void terminateConnectionHandler() {
+        // unregister window close handler
+        rootPane.getScene().getWindow().removeEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
+        if (connectionHandler != null) {
+            connectionHandler.terminate();
+            connectionHandler = null;
+        }
+    }
+
+    //Todo;javadoc
     public void stateChanged(ProtocolState newProtocolState) {
         // update UI (need to be run in UI thread: see Platform.runLater())
         Platform.runLater(new Runnable() {
@@ -71,6 +156,7 @@ public class ChatWindowController {
             }
         });
         if (newProtocolState == DISCONNECTED) {
+            blockUserInterface(true);
             terminateConnectionHandler();
         }
     }
