@@ -93,20 +93,14 @@ public class ChatWindowController {
         }
     }
 
-    public void disconnect() {
+    private void disconnect() {
         if (connectionHandler == null) {
             writeError("No connection handler");
             return;
         }
         try {
             blockUserInterface(true);
-            userNameField.clear();
             connectionHandler.disconnect();
-            try {
-                userNameField.requestFocus();
-            } catch (IllegalStateException e) {
-                System.out.println("Could not focus on username field");
-            }
         } catch (ChatProtocolException e) {
             writeError(e.getMessage());
         }
@@ -175,6 +169,7 @@ public class ChatWindowController {
             }
         });
         if (newProtocolState == DISCONNECTED) {
+            blockUserInterface(true);
             terminateConnectionHandler();
         }
     }

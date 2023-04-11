@@ -128,6 +128,6 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
     @Override
     protected void onInterrupted() {
         controller.addError("Connection to server lost");
-        controller.disconnect();
+        controller.stateChanged(DISCONNECTED);
     }
 }
