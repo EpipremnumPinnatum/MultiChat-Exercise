@@ -13,6 +13,14 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
     private final ChatWindowController controller;
 
     //TODO: (Strukturell) Observer Pattern verwenden statt Controller als Parameter
+
+    /**
+     * Constructs a new ClientConnectionHandler.
+     *
+     * @param connection the network connection
+     * @param userName   the username
+     * @param controller the ChatWindowController instance
+     */
     public ClientConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection,
                                    String userName,
                                    ChatWindowController controller) {
@@ -21,13 +29,18 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
         this.controller = controller;
     }
 
+    /**
+     * Sets the current protocol state.
+     *
+     * @param newProtocolState the new protocol state
+     */
     public void setState(Configuration.ProtocolState newProtocolState) {
         this.protocolState = newProtocolState;
         controller.stateChanged(newProtocolState);
     }
 
     /**
-     * Terminate the Connection Handler by closing the connection to not receive any more messages.
+     * Terminates the Connection Handler by closing the connection to not receive any more messages.
      */
     public void terminate() {
         System.out.println("Closing Connection Handler to Server");
@@ -35,12 +48,22 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
         System.out.println("Closed Connection Handler to Server");
     }
 
+    /**
+     * Connects to the server.
+     *
+     * @throws ChatProtocolException if the current protocol state is not NEW
+     */
     public void connect() throws ChatProtocolException {
         if (protocolState != NEW) throw new ChatProtocolException("Illegal state for connect: " + protocolState);
         this.sendData(userName, USER_NONE, CONNECT, null);
         this.setState(CONFIRM_CONNECT);
     }
 
+    /**
+     * Disconnects from the server.
+     *
+     * @throws ChatProtocolException if the current protocol state is not NEW or CONNECTED
+     */
     public void disconnect() throws ChatProtocolException {
         if (protocolState != NEW && protocolState != CONNECTED)
             throw new ChatProtocolException("Illegal state for disconnect: " + protocolState);
@@ -48,6 +71,13 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
         this.setState(CONFIRM_DISCONNECT);
     }
 
+    /**
+     * Sends a message to the specified receiver.
+     *
+     * @param receiver the receiver of the message
+     * @param message  the message to send
+     * @throws ChatProtocolException if the current protocol state is not CONNECTED
+     */
     public void message(String receiver, String message) throws ChatProtocolException {
         if (protocolState != CONNECTED) throw new ChatProtocolException("Illegal state for message: " + protocolState);
         this.sendData(userName, receiver, MESSAGE, message);
@@ -64,11 +94,17 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
         System.out.println("Ended Connection Handler");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleConnect(String sender) {
         System.err.println("Illegal connect request from server");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleConfirm(String receiver, String payload) {
         if (protocolState == CONFIRM_CONNECT) {
@@ -88,6 +124,9 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleDisconnect(String payload) {
         if (protocolState == DISCONNECTED) {
@@ -99,6 +138,9 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
         this.setState(DISCONNECTED);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleMessage(String sender, String receiver, String payload) {
         if (protocolState != CONNECTED) {
@@ -109,17 +151,26 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
         System.out.println("MESSAGE: From " + sender + " to " + receiver + ": " + payload);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleError(String sender, String payload) {
         controller.addError(payload);
         System.out.println("ERROR: " + payload);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleDefault(DataType type) {
         System.out.println("Unknown data type received: " + type);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onInterrupted() {
         controller.addError("Connection to server lost");

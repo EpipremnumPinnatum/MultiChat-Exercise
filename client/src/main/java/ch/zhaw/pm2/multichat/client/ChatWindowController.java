@@ -20,10 +20,30 @@ import java.util.regex.Pattern;
 
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
 
+/**
+ * The ChatWindowController class is a controller for the MultiChat client user interface.
+ * It handles the connection to the server and the sending and receiving of messages between clients.
+ */
 public class ChatWindowController {
+    /**
+     * A pattern to extract the username and message from a string. If the string starts with "@username", it is
+     * assumed that the message is directed to the specified user.
+     */
     private final Pattern messagePattern = Pattern.compile("^(?:@(.\\S*))?\\s*(.*)$");
+
+    /**
+     * The connection handler for this client.
+     */
     private ClientConnectionHandler connectionHandler;
+
+    /**
+     * The list of messages for this client.
+     */
     private ClientMessageList messages;
+
+    /**
+     * The handler for the window close event.
+     */
     private final WindowCloseHandler windowCloseHandler = new WindowCloseHandler();
 
     @FXML
@@ -76,7 +96,11 @@ public class ChatWindowController {
         }
     }
 
-    //Todo;javadoc
+    /**
+     * Sets the username in the UI.
+     *
+     * @param userName the username to set
+     */
     public void setUserName(String userName) {
         Platform.runLater(new Runnable() {
             @Override
@@ -86,7 +110,11 @@ public class ChatWindowController {
         });
     }
 
-    //Todo;javadoc
+    /**
+     * Sets the server address in the UI.
+     *
+     * @param serverAddress the server address to set
+     */
     public void setServerAddress(String serverAddress) {
         Platform.runLater(new Runnable() {
             @Override
@@ -96,7 +124,11 @@ public class ChatWindowController {
         });
     }
 
-    //Todo;javadoc
+    /**
+     * Sets the port number of the server.
+     *
+     * @param serverPort the port number of the server.
+     */
     public void setServerPort(int serverPort) {
         Platform.runLater(new Runnable() {
             @Override
@@ -106,39 +138,77 @@ public class ChatWindowController {
         });
     }
 
-    //Todo;javadoc
+    /**
+     * Adds a message to the message list and redraws the message list.
+     *
+     * @param sender   the sender of the message.
+     * @param receiver the receiver of the message.
+     * @param message  the message content.
+     */
     public void addMessage(String sender, String receiver, String message) {
         messages.addMessage(Configuration.MessageType.MESSAGE, sender, receiver, message);
         this.redrawMessageList();
     }
 
-    //Todo;javadoc
+    /**
+     * Adds an informational message to the message list and redraws the message list.
+     *
+     * @param message the message content.
+     */
     public void addInfo(String message) {
         messages.addMessage(Configuration.MessageType.INFO, null, null, message);
         this.redrawMessageList();
     }
 
+    /**
+     * Adds an error message to the message list and redraws the message list.
+     *
+     * @param message the message content.
+     */
     public void addError(String message) {
         messages.addMessage(Configuration.MessageType.ERROR, null, null, message);
         this.redrawMessageList();
     }
 
+    /**
+     * Writes an error message to the message area.
+     *
+     * @param message the message content.
+     */
     public void writeError(String message) {
         this.messageArea.appendText(String.format("[ERROR] %s\n", message));
     }
 
+    /**
+     * Writes an informational message to the message area.
+     *
+     * @param message the message content.
+     */
     public void writeInfo(String message) {
         this.messageArea.appendText(String.format("[INFO] %s\n", message));
     }
 
+    /**
+     * Writes a message to the message area.
+     *
+     * @param sender   the sender of the message.
+     * @param receiver the receiver of the message.
+     * @param message  the message content.
+     */
     public void writeMessage(String sender, String receiver, String message) {
         this.messageArea.appendText(String.format("[%s -> %s] %s\n", sender, receiver, message));
     }
 
+    /**
+     * Clears the message area.
+     */
     public void clearMessageArea() {
         this.messageArea.clear();
     }
 
+    /**
+     * Handles the window close event.
+     */
     private void applicationClose() {
         connectionHandler.setState(DISCONNECTED);
     }
@@ -154,6 +224,9 @@ public class ChatWindowController {
         filterValue.setDisable(isBlocked);
     }
 
+    /**
+     * Connects to the server.
+     */
     private void connect() {
         try {
             messages = new ClientMessageList(this); // clear message list
@@ -166,6 +239,9 @@ public class ChatWindowController {
         }
     }
 
+    /**
+     * Disconnects from the server.
+     */
     private void disconnect() {
         if (connectionHandler == null) {
             writeError("No connection handler");
@@ -179,6 +255,12 @@ public class ChatWindowController {
         }
     }
 
+    /**
+     * Starts a new client connection handler with the specified user name, server address, and server port.
+     * Creates a new thread for the connection handler and registers a window close handler.
+     *
+     * @throws IOException if an I/O error occurs when opening the connection
+     */
     private void startConnectionHandler() throws IOException {
         String userName = userNameField.getText();
         String serverAddress = serverAddressField.getText();
@@ -192,6 +274,9 @@ public class ChatWindowController {
         rootPane.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
     }
 
+    /**
+     * Unregisters the window close handler and terminates the client connection handler.
+     */
     private void terminateConnectionHandler() {
         // unregister window close handler
         rootPane.getScene().getWindow().removeEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
@@ -201,10 +286,17 @@ public class ChatWindowController {
         }
     }
 
+    /**
+     * Redraws the message list on the UI thread.
+     */
     private void redrawMessageList() {
         Platform.runLater(() -> messages.writeFilteredMessages(filterValue.getText().strip()));
     }
 
+    /**
+     * Toggles the connection status of the client. If the client is not connected, initiates a connection.
+     * Otherwise, terminates the connection.
+     */
     @FXML
     private void toggleConnection() {
         if (connectionHandler == null || connectionHandler.getState() != CONNECTED) {
@@ -214,6 +306,10 @@ public class ChatWindowController {
         }
     }
 
+    /**
+     * Sends a message to the server using the current connection handler.
+     * Validates the message format and handles any protocol exceptions.
+     */
     @FXML
     private void message() {
         if (connectionHandler == null) {
@@ -238,11 +334,17 @@ public class ChatWindowController {
         }
     }
 
+    /**
+     * Applies the current filter value to the message list.
+     */
     @FXML
     private void applyFilter() {
         this.redrawMessageList();
     }
 
+    /**
+     * Inner class for the event handler that closes the application window. Terminates the connection handler.
+     */
     class WindowCloseHandler implements EventHandler<WindowEvent> {
         public void handle(WindowEvent event) {
             applicationClose();

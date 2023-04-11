@@ -7,21 +7,59 @@ import java.net.SocketException;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.ERROR;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.NEW;
 
+/**
+ * The ConnectionHandler abstract class provides a base implementation for handling network connections with the server.
+ * It provides methods to start and stop receiving data, send data to the server, and handle different types of requests.
+ */
 public abstract class ConnectionHandler {
+    /**
+     * The special username to send a message to all users.
+     */
     public static final String USER_ALL = "*";
+
+    /**
+     * The network connection for this connection handler.
+     */
     protected NetworkHandler.NetworkConnection<NetworkMessage> connection;
+
+    /**
+     * The current protocol state of this connection handler.
+     */
     protected Configuration.ProtocolState protocolState = NEW;
+
+    /**
+     * The default username.
+     */
     protected static final String USER_NONE = "";
+
+    /**
+     * The username for this connection handler.
+     */
     protected String userName = USER_NONE;
 
+    /**
+     * Returns the username for this connection handler.
+     *
+     * @return the username for this connection handler
+     */
     public String getUserName() {
         return this.userName;
     }
 
+    /**
+     * Returns the current protocol state of this connection handler.
+     *
+     * @return the current protocol state of this connection handler
+     */
     public Configuration.ProtocolState getState() {
         return protocolState;
     }
 
+    /**
+     * Constructs a new ConnectionHandler instance with the specified network connection.
+     *
+     * @param connection the network connection for this connection handler
+     */
     protected ConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection) {
         this.connection = connection;
     }
@@ -69,6 +107,11 @@ public abstract class ConnectionHandler {
         System.out.println("Closed Connection Handler for " + userName);
     }
 
+    /**
+     * Processes the received network message.
+     *
+     * @param data the received network message
+     */
     protected void processData(NetworkMessage data) {
         try {
             handleRequest(data);
@@ -78,6 +121,14 @@ public abstract class ConnectionHandler {
         }
     }
 
+    /**
+     * This method sends a NetworkMessage to the connected NetworkConnection if it is available.
+     *
+     * @param sender   The sender of the message
+     * @param receiver The receiver of the message
+     * @param type     The DataType of the message
+     * @param payload  The message payload
+     */
     protected void sendData(String sender, String receiver, Configuration.DataType type, String payload) {
         if (connection.isAvailable()) {
             try {
@@ -92,20 +143,67 @@ public abstract class ConnectionHandler {
         }
     }
 
+    /**
+     * Handle the CONNECT request received from a client.
+     *
+     * @param sender The sender of the CONNECT request
+     * @throws ChatProtocolException if an error occurs while handling the request
+     */
     protected abstract void handleConnect(String sender) throws ChatProtocolException;
 
+    /**
+     * Handle the CONFIRM request received from a client.
+     *
+     * @param receiver The receiver of the CONFIRM request
+     * @param payload  The payload of the CONFIRM request
+     */
     protected abstract void handleConfirm(String receiver, String payload);
 
+    /**
+     * Handle the DISCONNECT request received from a client.
+     *
+     * @param payload The payload of the DISCONNECT request
+     * @throws ChatProtocolException if an error occurs while handling the request
+     */
     protected abstract void handleDisconnect(String payload) throws ChatProtocolException;
 
+    /**
+     * Handle the MESSAGE request received from a client.
+     *
+     * @param sender   The sender of the MESSAGE request
+     * @param receiver The receiver of the MESSAGE request
+     * @param payload  The payload of the MESSAGE request
+     * @throws ChatProtocolException if an error occurs while handling the request
+     */
     protected abstract void handleMessage(String sender, String receiver, String payload) throws ChatProtocolException;
 
+    /**
+     * Handle the ERROR request received from a client.
+     *
+     * @param sender  The sender of the ERROR request
+     * @param payload The payload of the ERROR request
+     */
     protected abstract void handleError(String sender, String payload);
 
+    /**
+     * Handle the request for a DataType that is not recognized.
+     *
+     * @param type The unrecognized DataType
+     */
     protected abstract void handleDefault(Configuration.DataType type);
 
+    /**
+     * Handle the interruption of the connection.
+     */
     protected abstract void onInterrupted();
 
+    /**
+     * This method handles a request by checking the DataType of the received NetworkMessage and calling the appropriate
+     * handle method.
+     *
+     * @param data The received NetworkMessage
+     * @throws ChatProtocolException if an error occurs while handling the request
+     */
     private void handleRequest(NetworkMessage data) throws ChatProtocolException {
         switch (data.getType()) {
             case CONNECT -> handleConnect(data.getSender());

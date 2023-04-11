@@ -13,6 +13,13 @@ import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.*;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
 
+/**
+ * This class represents the server-side connection handler for the chat application.
+ * <p>
+ * It extends the ConnectionHandler class and implements the Runnable interface.
+ * It manages the network connection with the clients and the communication protocol between them.
+ * It also keeps track of all connected clients using a registry.
+ */
 public class ServerConnectionHandler extends ConnectionHandler implements Runnable {
     /**
      * Global counter to generate connection IDs
@@ -24,6 +31,14 @@ public class ServerConnectionHandler extends ConnectionHandler implements Runnab
      */
     private final Map<String, ServerConnectionHandler> connectionRegistry;
 
+    /**
+     * Constructor for ServerConnectionHandler.
+     * Initializes the ConnectionHandler superclass and sets the registry and username.
+     *
+     * @param connection the network connection to be managed
+     * @param registry   the registry managing all connections
+     * @throws NullPointerException if the connection or registry is null
+     */
     public ServerConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection,
                                    Map<String, ServerConnectionHandler> registry) {
         super(connection);
@@ -33,11 +48,17 @@ public class ServerConnectionHandler extends ConnectionHandler implements Runnab
         userName = "Anonymous-" + connectionCounter.incrementAndGet();
     }
 
+    /**
+     * Starts the thread to receive messages from clients.
+     */
     @Override
     public void run() {
         startReceiving();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleConnect(String sender) throws ChatProtocolException {
         if (this.protocolState != NEW) {
@@ -55,11 +76,17 @@ public class ServerConnectionHandler extends ConnectionHandler implements Runnab
         this.protocolState = CONNECTED;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleConfirm(String receiver, String payload) {
         System.out.println("Not expecting to receive a CONFIRM request from client");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleDisconnect(String payload) throws ChatProtocolException {
         if (protocolState == DISCONNECTED) {
@@ -73,6 +100,9 @@ public class ServerConnectionHandler extends ConnectionHandler implements Runnab
         this.stopReceiving();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleMessage(String sender, String receiver, String payload) throws ChatProtocolException {
         if (protocolState != CONNECTED) {
@@ -92,16 +122,25 @@ public class ServerConnectionHandler extends ConnectionHandler implements Runnab
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleError(String sender, String payload) {
         System.out.println("Received error from client (" + sender + "): " + payload);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void handleDefault(DataType dataType) {
         System.out.println("Unknown data type received: " + dataType);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onInterrupted() {
         connectionRegistry.remove(userName);

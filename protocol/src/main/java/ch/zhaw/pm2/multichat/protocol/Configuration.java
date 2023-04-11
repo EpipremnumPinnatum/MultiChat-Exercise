@@ -24,7 +24,9 @@ public class Configuration {
         }
 
         /**
-         * returns a String representation of the DataType enumerator.
+         * Returns a String representation of the DataType enumerator.
+         *
+         * @return the String representation of the DataType
          */
         @Override
         public String toString() {
@@ -39,6 +41,9 @@ public class Configuration {
         NEW, CONFIRM_CONNECT, CONNECTED, CONFIRM_DISCONNECT, DISCONNECTED
     }
 
+    /**
+     * This enum describes the type of message sent from the server to the client.
+     */
     public enum MessageType {
         INFO, MESSAGE, ERROR
     }
