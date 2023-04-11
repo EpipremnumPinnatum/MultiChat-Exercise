@@ -24,7 +24,7 @@ import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
  * The ChatWindowController class is a controller for the MultiChat client user interface.
  * It handles the connection to the server and the sending and receiving of messages between clients.
  */
-public class ChatWindowController {
+public class ChatWindowController implements ClientConnectionObserver {
     /**
      * A pattern to extract the username and message from a string. If the string starts with "@username", it is
      * assumed that the message is directed to the specified user.
@@ -242,12 +242,13 @@ public class ChatWindowController {
      * @throws IOException if an I/O error occurs when opening the connection
      */
     private void startConnectionHandler() throws IOException {
+        ClientConnectionObserver observer = this;
         String userName = userNameField.getText();
         String serverAddress = serverAddressField.getText();
         int serverPort = Integer.parseInt(serverPortField.getText());
         connectionHandler = new ClientConnectionHandler(
-            NetworkHandler.openConnection(serverAddress, serverPort), userName,
-            this);
+            NetworkHandler.openConnection(serverAddress, serverPort), userName);
+        connectionHandler.addObserver(observer);
         new Thread(connectionHandler).start();
 
         // register window close handler

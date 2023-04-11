@@ -2,6 +2,9 @@ package ch.zhaw.pm2.multichat.client;
 
 import ch.zhaw.pm2.multichat.protocol.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.*;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
@@ -10,23 +13,33 @@ import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
  * This class handles the communication with the server
  */
 public class ClientConnectionHandler extends ConnectionHandler implements Runnable {
-    private final ChatWindowController controller;
-
-    //TODO: (Strukturell) Observer Pattern verwenden statt Controller als Parameter
+    /**
+     * A list of observers that will be notified of state changes, messages, errors, and other events
+     * during the client-server communication.
+     */
+    private final List<ClientConnectionObserver> observers;
 
     /**
      * Constructs a new ClientConnectionHandler.
      *
      * @param connection the network connection
      * @param userName   the username
-     * @param controller the ChatWindowController instance
      */
     public ClientConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection,
-                                   String userName,
-                                   ChatWindowController controller) {
+                                   String userName) {
         super(connection);
         this.userName = (userName == null || userName.isBlank()) ? USER_NONE : userName;
-        this.controller = controller;
+        this.observers = new ArrayList<>();
+    }
+
+    /**
+     * Adds a new observer to the list of observers that will be notified of state changes,
+     * messages, errors, and other events during the client-server communication.
+     *
+     * @param observer The ClientConnectionObserver instance to be added to the list of observers.
+     */
+    public void addObserver(ClientConnectionObserver observer) {
+        observers.add(observer);
     }
 
     /**
@@ -36,7 +49,9 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
      */
     public void setState(Configuration.ProtocolState newProtocolState) {
         this.protocolState = newProtocolState;
-        controller.stateChanged(newProtocolState);
+        for (ClientConnectionObserver observer : observers) {
+            observer.stateChanged(newProtocolState);
+        }
     }
 
     /**
@@ -107,20 +122,22 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
      */
     @Override
     protected void handleConfirm(String receiver, String payload) {
-        if (protocolState == CONFIRM_CONNECT) {
-            this.userName = receiver;
-            controller.setUserName(userName);
-            controller.setServerPort(connection.getRemotePort());
-            controller.setServerAddress(connection.getRemoteHost());
-            controller.addInfo(payload);
-            System.out.println("CONFIRM: " + payload);
-            this.setState(CONNECTED);
-        } else if (protocolState == CONFIRM_DISCONNECT) {
-            controller.addInfo(payload);
-            System.out.println("CONFIRM: " + payload);
-            this.setState(DISCONNECTED);
-        } else {
-            System.err.println("Got unexpected confirm message: " + payload);
+        for (ClientConnectionObserver observer : observers) {
+            if (protocolState == CONFIRM_CONNECT) {
+                this.userName = receiver;
+                observer.setUserName(userName);
+                observer.setServerPort(connection.getRemotePort());
+                observer.setServerAddress(connection.getRemoteHost());
+                observer.addInfo(payload);
+                System.out.println("CONFIRM: " + payload);
+                this.setState(CONNECTED);
+            } else if (protocolState == CONFIRM_DISCONNECT) {
+                observer.addInfo(payload);
+                System.out.println("CONFIRM: " + payload);
+                this.setState(DISCONNECTED);
+            } else {
+                System.err.println("Got unexpected confirm message: " + payload);
+            }
         }
     }
 
@@ -133,7 +150,9 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
             System.out.println("DISCONNECT: Already in disconnected: " + payload);
             return;
         }
-        controller.addInfo(payload);
+        for (ClientConnectionObserver observer : observers) {
+            observer.addInfo(payload);
+        }
         System.out.println("DISCONNECT: " + payload);
         this.setState(DISCONNECTED);
     }
@@ -147,7 +166,9 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
             System.out.println("MESSAGE: Illegal state " + protocolState + " for message: " + payload);
             return;
         }
-        controller.addMessage(sender, receiver, payload);
+        for (ClientConnectionObserver observer : observers) {
+            observer.addMessage(sender, receiver, payload);
+        }
         System.out.println("MESSAGE: From " + sender + " to " + receiver + ": " + payload);
     }
 
@@ -156,7 +177,9 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
      */
     @Override
     protected void handleError(String sender, String payload) {
-        controller.addError(payload);
+        for (ClientConnectionObserver observer : observers) {
+            observer.addError(payload);
+        }
         System.out.println("ERROR: " + payload);
     }
 
@@ -173,7 +196,9 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
      */
     @Override
     protected void onInterrupted() {
-        controller.addError("Connection to server lost");
-        controller.stateChanged(DISCONNECTED);
+        for (ClientConnectionObserver observer : observers) {
+            observer.addError("Connection to server lost");
+            observer.stateChanged(DISCONNECTED);
+        }
     }
 }
