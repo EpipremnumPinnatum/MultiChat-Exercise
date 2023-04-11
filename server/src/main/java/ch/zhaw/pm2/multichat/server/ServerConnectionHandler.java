@@ -15,6 +15,7 @@ import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
 
 /**
  * This class represents the server-side connection handler for the chat application.
+ * <p>
  * It extends the ConnectionHandler class and implements the Runnable interface.
  * It manages the network connection with the clients and the communication protocol between them.
  * It also keeps track of all connected clients using a registry.
