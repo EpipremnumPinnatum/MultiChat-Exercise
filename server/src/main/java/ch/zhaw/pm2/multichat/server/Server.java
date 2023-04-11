@@ -1,6 +1,7 @@
 package ch.zhaw.pm2.multichat.server;
 
 import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
+import ch.zhaw.pm2.multichat.protocol.NetworkMessage;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.concurrent.Executors;
 public class Server {
 
     /** Network server for incoming connections. */
-    private NetworkHandler.NetworkServer<String> networkServer;
+    private NetworkHandler.NetworkServer<NetworkMessage> networkServer;
 
     private static ExecutorService executorService;
 
@@ -43,7 +44,7 @@ public class Server {
         //TODO: (Funktional) Separate Threads um Nachrichten von allen Clients zu lesen.
         while (networkServer.isAvailable()) {
             try {
-                NetworkHandler.NetworkConnection<String> connection = networkServer.waitForConnection();
+                NetworkHandler.NetworkConnection<NetworkMessage> connection = networkServer.waitForConnection();
                 ServerConnectionHandler connectionHandler = new ServerConnectionHandler(connection, connections);
                 executorService.execute(connectionHandler);
                 System.out.printf("Connected new Client %s with IP:Port <%s:%d>%n",
