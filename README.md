@@ -30,7 +30,6 @@ The issues have been split into two main categories:
 - [Structural Issues](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+label%3Astructural) - All issues that have to do with architecture, clean-code, JavaDoc, etc.
 - [Functional Issues](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+label%3Afunctional) - Issues related to functionality that doesn't work as specified.
 
-View [All Open Issues](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+is%3Aopen)
 
 The following important structural/functional issues have been found:
 
@@ -68,18 +67,38 @@ The client is multithreaded, as it has to wait for incoming messages from the se
 To eliminate code duplication, ```Configuration``` holds all enums and constants used by the client and server.
 
 ### Server
-Like the client, the server is also multithreaded. All connections are listening for new messages in a separate thread, which is managed by a ```ExecutorService```.
+Like the client, the server is also multithreaded. The cached thread-pool was chosen, because it is the most flexible and therefore most suitable for
+hard to estimate traffic. Before it was only possible to connect one client. All connections are listening for new messages in a separate thread, which is managed by a ```ExecutorService```.
 
 ```ServerConnectionHandler``` is responsible for all incoming and outgoing messages from the server to the client. It also manages the list of all clients connected to the server.
+
+
 ```Server``` is the class responsible for starting the server.
 
 When the ```Server``` is interrupted, it shuts down all connections and stops listening for new connections, while also signaling all clients that the server is shutting down.
+
+### ConnectionHandler
+It was decided to create a parent class ```ConnectionHandler```, because there was duplication in the ServerConnectionHandler and ClientConnectionHandler, which was reduced
+through the parent class. Both had the processData methods in this class and the client class was split up into smaller methods to make it
+the classes more readable and easily maintainable. So each method only does one thing.
+
+### Configuration
+Handles several enumerators that multiple classes use. It was done to centralise the different constants. Fields were also changed to enumerators
+so that they are more easily accessible and less prone to human error.
+
+### ClientMessageList
+Filters and saves the messages. An object is less error-prone and more easily accessible than a String, so those Strings that formerly
+belonged to the processData methods. It was also mentioned in the task description that we should do so.
 
 ## Future enhancements
 - implement channels (e.g. in Teams or Slack), so that clients can communicate on a specific topic. This would require the creation of a new class ```Channel``` and extending the ```NetworkMessage``` class.
 - create a login system, so that clients can identify themselves. With the use of a database
 - other use for a database is to store previous messages
 - implement the ability to send emoticons, images or files. This could be done by extending the ```NetworkMessage``` class.
+
+## ChatWindowController
+The class that is the controller in the MVC pattern. Interaction by the user was reduced when the client is disconnected from the server to prevent useless or even
+disrupting behaviour. Before the message field did not clear itself, when a message was sent, this was corrected. There was also no feedback to the user when the server was shut down.
 
 ## Authors
 - verdiant (Michael Verdile)
