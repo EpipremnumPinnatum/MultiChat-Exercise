@@ -84,12 +84,7 @@ public class ChatWindowController {
      */
     public void stateChanged(ProtocolState newProtocolState) {
         // update UI (need to be run in UI thread: see Platform.runLater())
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                connectButton.setText((newProtocolState == CONNECTED || newProtocolState == CONFIRM_DISCONNECT) ? "Disconnect" : "Connect");
-            }
-        });
+        Platform.runLater(() -> connectButton.setText((newProtocolState == CONNECTED || newProtocolState == CONFIRM_DISCONNECT) ? "Disconnect" : "Connect"));
         if (newProtocolState == DISCONNECTED) {
             blockUserInterface(true);
             terminateConnectionHandler();
@@ -102,12 +97,7 @@ public class ChatWindowController {
      * @param userName the username to set
      */
     public void setUserName(String userName) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                userNameField.setText(userName);
-            }
-        });
+        Platform.runLater(() -> userNameField.setText(userName));
     }
 
     /**
@@ -116,12 +106,7 @@ public class ChatWindowController {
      * @param serverAddress the server address to set
      */
     public void setServerAddress(String serverAddress) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                serverAddressField.setText(serverAddress);
-            }
-        });
+        Platform.runLater(() -> serverAddressField.setText(serverAddress));
     }
 
     /**
@@ -130,12 +115,7 @@ public class ChatWindowController {
      * @param serverPort the port number of the server.
      */
     public void setServerPort(int serverPort) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                serverPortField.setText(Integer.toString(serverPort));
-            }
-        });
+        Platform.runLater(() -> serverPortField.setText(Integer.toString(serverPort)));
     }
 
     /**
@@ -256,7 +236,7 @@ public class ChatWindowController {
     }
 
     /**
-     * Starts a new client connection handler with the specified user name, server address, and server port.
+     * Starts a new client connection handler with the specified username, server address, and server port.
      * Creates a new thread for the connection handler and registers a window close handler.
      *
      * @throws IOException if an I/O error occurs when opening the connection
