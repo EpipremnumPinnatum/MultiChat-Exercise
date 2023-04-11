@@ -15,20 +15,13 @@ And in a separate terminal window:
 gradle client:run
 ```
 
-## Main issues
-### Functional
-- [Cannot connect multiple Clients](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/31)
-- [Seperate Thread for waiting on new messages](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/23)
-- [Block UI interactions when disconnected](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/25)
-- [Message field not reset when message sent](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/32)
-- [UI not updated when server shutdown](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/40)
+## Issues
+The issues have been split into two main categories:
 
-### Structural
-- [Code duplication in connection handlers](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/28)
-- [processData method is too big](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/15)
-- [Create Configuration class](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/8)
-- [Create NetworkMessage class](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/39)
-- [Create Observer Pattern for MVC](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/27)
+- [Structural Issues](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+label%3Astructural) - All issues that have to do with architecture, clean-code, JavaDoc, etc.
+- [Bugs](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+label%3Afunctional) - Issues related to functionality that doesn't work as specified.
+
+View [All Open Issues](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+is%3Aopen)
 
 ## Class diagram
 ![Class diagram](assets/ClassDiagram.png)
