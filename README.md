@@ -45,7 +45,7 @@ The following important structural/functional issues have been found:
 ### Functional Issues
 
 - [Cannot connect multiple Clients](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/31)
-- [Seperate Thread for waiting on new messages](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/23)
+- [Separate Thread for waiting on new messages](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/23)
 - [Block UI interactions when disconnected](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/25)
 - [Message field not reset when message sent](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/32)
 - [UI not updated when server shutdown](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/40)
