@@ -1,5 +1,12 @@
 # MultiChat
 MultiChat is a server/client communication application that allows you to chat with multiple people at once.
+It was made as a group project as part of the bachelor's degree in IT at the ZHAW in Zurich. We were provided
+with the base code that had multiple issues. The issues were classified and documented as part of the exercise.
+
+The program also has a search feature with which one can search through the text that appears in the chat window.
+It was not clear what the wanted implementation was. We saw it as an advantage that the search function
+would also search for usernames, so we left it this way, because like this one can also search for all the messages 
+sent and saved by the one user that was searched for. 
 
 ## Requirements
 - Java 17 or higher
