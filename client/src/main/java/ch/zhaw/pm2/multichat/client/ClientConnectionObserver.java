@@ -59,4 +59,32 @@ public interface ClientConnectionObserver {
      * @param error The error message.
      */
     void addError(String error);
+
+    /**
+     * Writes a message to the message area, including sender, receiver, and the message content.
+     *
+     * @param sender   The sender of the message.
+     * @param receiver The receiver of the message.
+     * @param message  The content of the message.
+     */
+    void writeMessage(String sender, String receiver, String message);
+
+    /**
+     * Writes an informational message to the message area.
+     *
+     * @param message The content of the informational message.
+     */
+    void writeInfo(String message);
+
+    /**
+     * Writes an error message to the message area.
+     *
+     * @param message The content of the error message.
+     */
+    void writeError(String message);
+
+    /**
+     * Clears the message area, removing all messages, information, and errors displayed.
+     */
+    void clearMessageArea();
 }

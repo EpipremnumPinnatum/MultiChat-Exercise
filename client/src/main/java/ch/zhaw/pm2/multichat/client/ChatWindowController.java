@@ -70,11 +70,12 @@ public class ChatWindowController implements ClientConnectionObserver {
      */
     @FXML
     public void initialize() {
+        ClientConnectionObserver observer = this;
         blockUserInterface(true);
         serverAddressField.setText(NetworkHandler.DEFAULT_ADDRESS.getCanonicalHostName());
         serverPortField.setText(String.valueOf(NetworkHandler.DEFAULT_PORT));
         stateChanged(NEW);
-        messages = new ClientMessageList(this);
+        messages = new ClientMessageList(observer);
     }
 
     /**
@@ -209,7 +210,8 @@ public class ChatWindowController implements ClientConnectionObserver {
      */
     private void connect() {
         try {
-            messages = new ClientMessageList(this); // clear message list
+            ClientConnectionObserver observer = this;
+            messages = new ClientMessageList(observer); // clear message list
             startConnectionHandler();
             connectionHandler.connect();
             blockUserInterface(false);
