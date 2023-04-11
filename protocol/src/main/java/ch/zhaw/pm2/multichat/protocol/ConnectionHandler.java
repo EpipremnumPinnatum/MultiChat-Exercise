@@ -14,16 +14,16 @@ public abstract class ConnectionHandler {
     protected static final String USER_NONE = "";
     protected String userName = USER_NONE;
 
-    protected ConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection) {
-        this.connection = connection;
-    }
-
     public String getUserName() {
         return this.userName;
     }
 
     public Configuration.ProtocolState getState() {
         return protocolState;
+    }
+
+    protected ConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection) {
+        this.connection = connection;
     }
 
     /**
