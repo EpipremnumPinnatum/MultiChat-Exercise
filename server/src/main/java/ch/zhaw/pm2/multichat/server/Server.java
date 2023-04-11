@@ -11,19 +11,15 @@ import java.util.concurrent.Executors;
 
 
 public class Server {
-
     /**
      * Network server for incoming connections.
      */
-    private NetworkHandler.NetworkServer<NetworkMessage> networkServer;
-
+    private final NetworkHandler.NetworkServer<NetworkMessage> networkServer;
     private static ExecutorService executorService;
-
     /**
      * Registry for open connections.
      */
-    private Map<String, ServerConnectionHandler> connections = new HashMap<>();
-
+    private final Map<String, ServerConnectionHandler> connections = new HashMap<>();
 
     /**
      * Main method for starting the server.
