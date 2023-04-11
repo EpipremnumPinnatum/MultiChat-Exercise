@@ -26,10 +26,10 @@ import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
  */
 public class ChatWindowController {
     /**
-     * A pattern to extract the recipient and message from a string. If the string starts with "@recipient", it is
-     * assumed that the message is directed to the recipient.
+     * A pattern to extract the username and message from a string. If the string starts with "@username", it is
+     * assumed that the message is directed to the specified user.
      */
-    private final Pattern messagePattern = Pattern.compile("^(?:@(\\w*))?\\s*(.*)$");//Todo: What does it? needs a comment
+    private final Pattern messagePattern = Pattern.compile("^(?:@(.\\S*))?\\s*(.*)$");
 
     /**
      * The connection handler for this client.
