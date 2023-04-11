@@ -3,7 +3,6 @@ package ch.zhaw.pm2.multichat.protocol;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Scanner;
 
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.ERROR;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.NEW;
