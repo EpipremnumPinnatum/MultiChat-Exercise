@@ -23,9 +23,9 @@ The issues have been split into two main categories:
 
 View [All Open Issues](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues?q=is%3Aissue+is%3Aopen)
 
-### Structural Issues
+The following important structural/functional issues have been found:
 
-After analyzing the project in the beginning, the following structural issues have been found.
+### Structural Issues
 
 - [Code duplication in connection handlers](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/28)
 - [processData method is too big](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/15)
@@ -34,8 +34,6 @@ After analyzing the project in the beginning, the following structural issues ha
 - [Create Observer Pattern for MVC](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/27)
 
 ### Functional Issues
-
-After analyzing the project in the beginning, the following functional issues have been found.
 
 - [Cannot connect multiple Clients](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/31)
 - [Seperate Thread for waiting on new messages](https://github.zhaw.ch/PM2-IT22tbZH-wahl-krea/uebung-hk1-verdiant-iselival-monterap/issues/23)
