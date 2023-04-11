@@ -3,21 +3,16 @@ package ch.zhaw.pm2.multichat.protocol;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Scanner;
 
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.ERROR;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.NEW;
 
 public abstract class ConnectionHandler {
     public static final String USER_ALL = "*";
-    protected NetworkHandler.NetworkConnection<String> connection;
+    protected NetworkHandler.NetworkConnection<NetworkMessage> connection;
     protected Configuration.ProtocolState protocolState = NEW;
     protected static final String USER_NONE = "";
     protected String userName = USER_NONE;
-
-    protected ConnectionHandler(NetworkHandler.NetworkConnection<String> connection) {
-        this.connection = connection;
-    }
 
     public String getUserName() {
         return this.userName;
@@ -25,6 +20,10 @@ public abstract class ConnectionHandler {
 
     public Configuration.ProtocolState getState() {
         return protocolState;
+    }
+
+    protected ConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection) {
+        this.connection = connection;
     }
 
     /**
@@ -36,7 +35,7 @@ public abstract class ConnectionHandler {
             System.out.println("Start receiving data...");
             //TODO: (Funktional) Separater Thread für das Warten auf neue Nachrichten, rest der Applikation blockiert
             while (connection.isAvailable()) {
-                String data = connection.receive();
+                NetworkMessage data = connection.receive();
                 processData(data);
             }
         } catch (SocketException e) {
@@ -70,31 +69,19 @@ public abstract class ConnectionHandler {
         System.out.println("Closed Connection Handler for " + userName);
     }
 
-    protected void processData(String data) {
+    protected void processData(NetworkMessage data) {
         try {
-            Scanner scanner = new Scanner(data);
-            String sender = readField(scanner, "Sender");
-            String receiver = readField(scanner, "Receiver");
-            String type = readField(scanner, "Type");
-            String payload = readField(scanner, "Payload");
-            handleRequest(sender, receiver, Configuration.DataType.valueOf(type), payload);
+            handleRequest(data);
         } catch (ChatProtocolException error) {
             System.err.println("Error while processing data: " + error.getMessage());
-            sendData(USER_NONE, userName, ERROR.toString(), error.getMessage());
+            sendData(USER_NONE, userName, ERROR, error.getMessage());
         }
     }
 
-    protected void sendData(String sender, String receiver, String type, String payload) {
+    protected void sendData(String sender, String receiver, Configuration.DataType type, String payload) {
         if (connection.isAvailable()) {
-            new StringBuilder();
-            String data = new StringBuilder()
-                .append(sender + "\n")
-                .append(receiver + "\n")
-                .append(type + "\n")
-                .append(payload + "\n")
-                .toString();
             try {
-                connection.send(data);
+                connection.send(new NetworkMessage(sender, receiver, type, payload));
             } catch (SocketException e) {
                 System.err.println("Connection closed: " + e.getMessage());
             } catch (EOFException e) {
@@ -119,22 +106,14 @@ public abstract class ConnectionHandler {
 
     protected abstract void onInterrupted();
 
-    private static String readField(Scanner scanner, String fieldName) throws ChatProtocolException {
-        if (scanner.hasNextLine()) {
-            return scanner.nextLine();
-        } else {
-            throw new ChatProtocolException(fieldName + " not found");
-        }
-    }
-
-    private void handleRequest(String sender, String receiver, Configuration.DataType dataType, String payload) throws ChatProtocolException {
-        switch (dataType) {
-            case CONNECT -> handleConnect(sender);
-            case CONFIRM -> handleConfirm(receiver, payload);
-            case DISCONNECT -> handleDisconnect(payload);
-            case MESSAGE -> handleMessage(sender, receiver, payload);
-            case ERROR -> handleError(sender, payload);
-            default -> handleDefault(dataType);
+    private void handleRequest(NetworkMessage data) throws ChatProtocolException {
+        switch (data.getType()) {
+            case CONNECT -> handleConnect(data.getSender());
+            case CONFIRM -> handleConfirm(data.getReceiver(), data.getPayload());
+            case DISCONNECT -> handleDisconnect(data.getPayload());
+            case MESSAGE -> handleMessage(data.getSender(), data.getReceiver(), data.getPayload());
+            case ERROR -> handleError(data.getSender(), data.getPayload());
+            default -> handleDefault(data.getType());
         }
     }
 }

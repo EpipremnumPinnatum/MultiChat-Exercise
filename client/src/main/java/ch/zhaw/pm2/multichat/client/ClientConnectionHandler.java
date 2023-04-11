@@ -1,24 +1,19 @@
 package ch.zhaw.pm2.multichat.client;
 
-import ch.zhaw.pm2.multichat.protocol.ChatProtocolException;
-import ch.zhaw.pm2.multichat.protocol.Configuration;
-import ch.zhaw.pm2.multichat.protocol.ConnectionHandler;
-import ch.zhaw.pm2.multichat.protocol.NetworkHandler;
+import ch.zhaw.pm2.multichat.protocol.*;
 
+import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.DataType.*;
 import static ch.zhaw.pm2.multichat.protocol.Configuration.ProtocolState.*;
-
-//Todo: write javadoc
 
 /**
  * This class handles the communication with the server
  */
-
 public class ClientConnectionHandler extends ConnectionHandler implements Runnable {
     private final ChatWindowController controller;
 
     //TODO: (Strukturell) Observer Pattern verwenden statt Controller als Parameter
-    public ClientConnectionHandler(NetworkHandler.NetworkConnection<String> connection,
+    public ClientConnectionHandler(NetworkHandler.NetworkConnection<NetworkMessage> connection,
                                    String userName,
                                    ChatWindowController controller) {
         super(connection);
@@ -32,17 +27,6 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
     }
 
     /**
-     * Start the connection handler.
-     * It will start listening for incoming messages from the server and process them.
-     */
-    @Override
-    public void run() {
-        System.out.println("Starting Connection Handler");
-        startReceiving();
-        System.out.println("Ended Connection Handler");
-    }
-
-    /**
      * Terminate the Connection Handler by closing the connection to not receive any more messages.
      */
     public void terminate() {
@@ -53,20 +37,31 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
 
     public void connect() throws ChatProtocolException {
         if (protocolState != NEW) throw new ChatProtocolException("Illegal state for connect: " + protocolState);
-        this.sendData(userName, USER_NONE, CONNECT.toString(), null);
+        this.sendData(userName, USER_NONE, CONNECT, null);
         this.setState(CONFIRM_CONNECT);
     }
 
     public void disconnect() throws ChatProtocolException {
         if (protocolState != NEW && protocolState != CONNECTED)
             throw new ChatProtocolException("Illegal state for disconnect: " + protocolState);
-        this.sendData(userName, USER_NONE, DISCONNECT.toString(), null);
+        this.sendData(userName, USER_NONE, DISCONNECT, null);
         this.setState(CONFIRM_DISCONNECT);
     }
 
     public void message(String receiver, String message) throws ChatProtocolException {
         if (protocolState != CONNECTED) throw new ChatProtocolException("Illegal state for message: " + protocolState);
-        this.sendData(userName, receiver, MESSAGE.toString(), message);
+        this.sendData(userName, receiver, MESSAGE, message);
+    }
+
+    /**
+     * Start the connection handler.
+     * It will start listening for incoming messages from the server and process them.
+     */
+    @Override
+    public void run() {
+        System.out.println("Starting Connection Handler");
+        startReceiving();
+        System.out.println("Ended Connection Handler");
     }
 
     @Override
@@ -121,7 +116,7 @@ public class ClientConnectionHandler extends ConnectionHandler implements Runnab
     }
 
     @Override
-    protected void handleDefault(Configuration.DataType type) {
+    protected void handleDefault(DataType type) {
         System.out.println("Unknown data type received: " + type);
     }
 
