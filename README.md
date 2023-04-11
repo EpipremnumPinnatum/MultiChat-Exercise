@@ -60,3 +60,8 @@ When the ```Server``` is interrupted, it shuts down all connections and stops li
 - create a login system, so that clients can identify themselves. With the use of a database
 - other use for a database is to store previous messages
 - implement the ability to send emoticons, images or files. This could be done by extending the ```NetworkMessage``` class.
+
+## Authors
+- verdiant (Michael Verdile)
+- iselival (Valentin Iseli)
+- monterap (Raphael Monteiro)
