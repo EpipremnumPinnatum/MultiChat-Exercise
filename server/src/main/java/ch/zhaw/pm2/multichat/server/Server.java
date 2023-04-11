@@ -9,13 +9,20 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+/**
+ * The server class listens for incoming connections from clients and manages connections.
+ */
 public class Server {
     /**
      * Network server for incoming connections.
      */
     private final NetworkHandler.NetworkServer<NetworkMessage> networkServer;
+
+    /**
+     * Executor service for handling server connection requests in parallel.
+     */
     private static ExecutorService executorService;
+
     /**
      * Registry for open connections.
      */
