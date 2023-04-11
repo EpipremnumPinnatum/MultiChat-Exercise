@@ -24,7 +24,6 @@ public class ChatWindowController {
     private final Pattern messagePattern = Pattern.compile("^(?:@(\\w*))?\\s*(.*)$");//Todo: What does it? needs a comment
     private ClientConnectionHandler connectionHandler;
     private ClientMessageList messages;
-
     private final WindowCloseHandler windowCloseHandler = new WindowCloseHandler();
 
     @FXML
@@ -118,7 +117,6 @@ public class ChatWindowController {
         this.redrawMessageList();
     }
 
-
     public void addError(String message) {
         messages.addMessage(Configuration.MessageType.ERROR, null, null, message);
         this.redrawMessageList();
@@ -136,7 +134,6 @@ public class ChatWindowController {
         this.messageArea.appendText(String.format("[%s -> %s] %s\n", sender, receiver, message));
     }
 
-
     public void clearMessageArea() {
         this.messageArea.clear();
     }
@@ -144,7 +141,6 @@ public class ChatWindowController {
     private void applicationClose() {
         connectionHandler.setState(DISCONNECTED);
     }
-
 
     /**
      * Activates/Deactivates the UI elements.
@@ -181,7 +177,6 @@ public class ChatWindowController {
         }
     }
 
-
     private void startConnectionHandler() throws IOException {
         String userName = userNameField.getText();
         String serverAddress = serverAddressField.getText();
@@ -195,7 +190,6 @@ public class ChatWindowController {
         rootPane.getScene().getWindow().addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
     }
 
-
     private void terminateConnectionHandler() {
         // unregister window close handler
         rootPane.getScene().getWindow().removeEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, windowCloseHandler);
@@ -204,7 +198,6 @@ public class ChatWindowController {
             connectionHandler = null;
         }
     }
-
 
     private void redrawMessageList() {
         Platform.runLater(() -> messages.writeFilteredMessages(filterValue.getText().strip()));
