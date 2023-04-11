@@ -16,10 +16,6 @@ indent_size = 4
 [*.md]
 trim_trailing_whitespace = false
 
-# explicit 4 space indentation
-[*.py]
-indent_size = 4
-
 # explicit 2 space indentation
 [*.{json,yml,yaml,xml,ddl,sql}]
 indent_size = 2
